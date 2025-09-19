@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { PrismaService } from 'src/modules/modules-system/prisma/prisma.service';
@@ -7,8 +7,26 @@ import { QueryRoomDto } from './dto/query-room.dto';
 @Injectable()
 export class RoomService {
   constructor(private readonly prisma: PrismaService) {}
-  create(createRoomDto: CreateRoomDto) {
-    return 'This action adds a new room';
+
+  async findRoomExisting(id: number) {
+    const roomExist = await this.prisma.phong.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!roomExist) throw new BadRequestException('Not found room!!!');
+
+    return roomExist;
+  }
+
+  async create(createRoomDto: CreateRoomDto) {
+    const newRoom = await this.prisma.phong.create({
+      data: {
+        ...createRoomDto,
+      },
+    });
+    return newRoom;
   }
 
   async findAll() {
@@ -66,15 +84,35 @@ export class RoomService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} room`;
+  async findOne(id: number) {
+    const roomExist = await this.findRoomExisting(id);
+    return roomExist;
   }
 
-  update(id: number, updateRoomDto: UpdateRoomDto) {
-    return `This action updates a #${id} room`;
+  async update(id: number, updateRoomDto: UpdateRoomDto) {
+    const roomExist = await this.findRoomExisting(id);
+
+    const newRoomUpdated = await this.prisma.phong.update({
+      where: {
+        id: roomExist.id,
+      },
+      data: {
+        ...updateRoomDto,
+      },
+    });
+
+    return newRoomUpdated;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} room`;
+  async remove(id: number) {
+    const roomExist = await this.findRoomExisting(id);
+
+    await this.prisma.phong.delete({
+      where: {
+        id: roomExist.id,
+      },
+    });
+
+    return true;
   }
 }

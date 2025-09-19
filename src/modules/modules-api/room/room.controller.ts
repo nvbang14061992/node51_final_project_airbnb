@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  Put,
 } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { CreateRoomDto } from './dto/create-room.dto';
@@ -19,6 +20,7 @@ export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
   @Post()
+  @MessageResponse('Create one room successfully!')
   create(@Body() createRoomDto: CreateRoomDto) {
     return this.roomService.create(createRoomDto);
   }
@@ -36,16 +38,19 @@ export class RoomController {
   }
 
   @Get(':id')
+  @MessageResponse('Get one room successfully!')
   findOne(@Param('id') id: string) {
     return this.roomService.findOne(+id);
   }
 
   @Patch(':id')
+  @MessageResponse('Edit one room successfully!')
   update(@Param('id') id: string, @Body() updateRoomDto: UpdateRoomDto) {
     return this.roomService.update(+id, updateRoomDto);
   }
 
   @Delete(':id')
+  @MessageResponse('Delete one room successfully!')
   remove(@Param('id') id: string) {
     return this.roomService.remove(+id);
   }
