@@ -14,10 +14,17 @@ import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { MessageResponse } from 'src/common/decorators/message-response.decorator';
 import { QueryRoomDto } from './dto/query-room.dto';
+import { QueryRoomLocationDto } from './dto/query-location.dto';
 
 @Controller('phong-thue')
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
+
+  @Get('/lay-phong-theo-vi-tri')
+  @MessageResponse('Get all rooms with specified location successfully!')
+  findAllLocation(@Query() query: QueryRoomLocationDto) {
+    return this.roomService.findAllLocation(query);
+  }
 
   @Post()
   @MessageResponse('Create one room successfully!')

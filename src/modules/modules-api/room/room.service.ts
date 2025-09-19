@@ -3,6 +3,7 @@ import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { PrismaService } from 'src/modules/modules-system/prisma/prisma.service';
 import { QueryRoomDto } from './dto/query-room.dto';
+import { QueryRoomLocationDto } from './dto/query-location.dto';
 
 @Injectable()
 export class RoomService {
@@ -114,5 +115,28 @@ export class RoomService {
     });
 
     return true;
+  }
+
+  async findAllLocation(query: QueryRoomLocationDto) {
+    let { locationId } = query;
+
+    const location = await this.prisma.viTri.findUnique({
+      where: {
+        id: locationId,
+      },
+    });
+
+    if (!location) throw new BadRequestException('Not found location!!!');
+
+    const roomWithgivenLocationId = await this.prisma.phong.findMany({
+      where: {
+        ma_vi_tri: locationId,
+      },
+    });
+
+    if (!roomWithgivenLocationId)
+      throw new BadRequestException('Not exist room for this location');
+
+    return roomWithgivenLocationId;
   }
 }
