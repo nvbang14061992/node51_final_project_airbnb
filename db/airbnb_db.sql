@@ -14,7 +14,7 @@ CREATE TABLE `Users` (
     `so_dien_thoai`  VARCHAR(255),
     `ngay_sinh`  VARCHAR(255),
     `gioi_tinh`  BOOLEAN,
-	`vai_tro`  VARCHAR(255),
+	`vai_tro`  VARCHAR(255) DEFAULT 'user',
 	`deletedBy` INT NOT NULL DEFAULT 0,
 	`isDeleted` TINYINT(1) NOT NULL DEFAULT 0,
 	`deletedAt` TIMESTAMP NULL DEFAULT NULL,

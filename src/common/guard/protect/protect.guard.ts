@@ -25,7 +25,6 @@ export class ProtectGuard extends AuthGuard('protect') {
   }
 
   handleRequest(err, user, info) {
-    console.log({ user });
     if (err || !user) {
       if (info instanceof TokenExpiredError) {
         throw new ForbiddenException(info.message);

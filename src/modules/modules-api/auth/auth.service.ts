@@ -9,6 +9,7 @@ import { LoginDto } from './dto/login.dto';
 import { PrismaService } from 'src/modules/modules-system/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { TokenService } from 'src/modules/modules-system/token/token.service';
+import { SignupDto } from './dto/signup.dto';
 
 @Injectable()
 export class AuthService {
@@ -37,8 +38,8 @@ export class AuthService {
       );
     }
 
-    // const isPasswordValid = bcrypt.compareSync(password, userExist.password);
-    // if (!isPasswordValid) throw new BadRequestException(`Invalid password`);
+    const isPasswordValid = bcrypt.compareSync(password, userExist.password);
+    if (!isPasswordValid) throw new BadRequestException(`Invalid password`);
 
     // return tokens
     const tokens = this.tokenService.createTokens(userExist.id);
@@ -46,23 +47,33 @@ export class AuthService {
     return tokens;
   }
 
-  create(createAuthDto: CreateAuthDto) {
-    throw new NotImplementedException();
-  }
+  async signup(signupDto: SignupDto) {
+    const { email, password, name, phone, birthday, gender } = signupDto;
 
-  findAll() {
-    throw new NotImplementedException();
-  }
+    const userExist = await this.prisma.users.findUnique({
+      where: {
+        email: email,
+      },
+    });
 
-  findOne(id: number) {
-    throw new NotImplementedException();
-  }
+    if (userExist) {
+      throw new BadRequestException(`Email ${email} already exists`);
+    }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    throw new NotImplementedException();
-  }
+    // Hash the password before saving
+    const hashedPassword = bcrypt.hashSync(password, 10);
 
-  remove(id: number) {
-    throw new NotImplementedException();
+    const newUser = await this.prisma.users.create({
+      data: {
+        email: email,
+        password: hashedPassword,
+        ten: name,
+        so_dien_thoai: phone,
+        ngay_sinh: birthday,
+        gioi_tinh: gender,
+      },
+    });
+
+    return true;
   }
 }

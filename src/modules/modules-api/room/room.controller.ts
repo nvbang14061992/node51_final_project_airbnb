@@ -16,6 +16,8 @@ import { MessageResponse } from 'src/common/decorators/message-response.decorato
 import { QueryRoomDto } from './dto/query-room.dto';
 import { QueryRoomLocationDto } from './dto/query-location.dto';
 import { Public } from 'src/common/decorators/public.decorator';
+import { CurrentUser } from 'src/common/decorators/user.decorator';
+import type { Users } from 'generated/prisma';
 
 @Controller('phong-thue')
 export class RoomController {
@@ -35,7 +37,8 @@ export class RoomController {
 
   @Get()
   @MessageResponse('Get all rooms successfully!')
-  findAll() {
+  findAll(@CurrentUser() user: Users) {
+    console.log(user);
     return this.roomService.findAll();
   }
 

@@ -13,6 +13,7 @@ import { UpdateAuthDto } from './dto/update-auth.dto';
 import { LoginDto } from './dto/login.dto';
 import { MessageResponse } from 'src/common/decorators/message-response.decorator';
 import { Public } from 'src/common/decorators/public.decorator';
+import { SignupDto } from './dto/signup.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -23,5 +24,12 @@ export class AuthController {
   @Public()
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
+  }
+
+  @MessageResponse('Register successfully!!!')
+  @Post('/signup')
+  @Public()
+  signup(@Body() signupDto: SignupDto) {
+    return this.authService.signup(signupDto);
   }
 }
