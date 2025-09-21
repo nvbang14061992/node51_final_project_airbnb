@@ -10,7 +10,7 @@ CREATE TABLE `Users` (
 	`id` INT PRIMARY KEY NOT NULL AUTO_INCREMENT, 
 	`email` VARCHAR(255) NOT NULL UNIQUE,
 	`ten` VARCHAR(255),
-	`mat_khau` VARCHAR(255),
+	`password` VARCHAR(255),
     `so_dien_thoai`  VARCHAR(255),
     `ngay_sinh`  VARCHAR(255),
     `gioi_tinh`  BOOLEAN,
@@ -115,7 +115,7 @@ CREATE TABLE `ThongBaoLuotBookMoi` (
 
 -- Du lieu mo phong
 -- USERS (3 người dùng)
-INSERT INTO Users (email, ten, mat_khau, so_dien_thoai, ngay_sinh, gioi_tinh, vai_tro)
+INSERT INTO Users (email, ten, password, so_dien_thoai, ngay_sinh, gioi_tinh, vai_tro)
 VALUES
 ('user1@gmail.com', 'Nguyen Van A', 'pass123', '0909000001', '1990-01-01', 1, 'user'),
 ('user2@gmail.com', 'Tran Thi B', 'pass234', '0909000002', '1992-02-02', 0, 'user'),

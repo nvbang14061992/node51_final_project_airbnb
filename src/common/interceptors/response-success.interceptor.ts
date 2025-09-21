@@ -17,15 +17,14 @@ export class ResponseSuccessInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const { statusCode } = context.switchToHttp().getResponse<Response>();
     return next.handle().pipe(
-      // tap: touch, but not change, can not return error
-      // finalyze: not change, but can return error
-      // map: change data and format data
       map((data) => {
         const message = this.relfector.get(
           MESSAGE_RESPONSE,
           context.getHandler(),
         );
 
+        // delete password from data if exist
+        delete data.password;
         return {
           status: 'success',
           statusCode: statusCode,
