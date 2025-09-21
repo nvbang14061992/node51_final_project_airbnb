@@ -2,14 +2,14 @@ import {
   BadRequestException,
   Injectable,
   NotImplementedException,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import { LoginDto } from './dto/login.dto';
 import { PrismaService } from 'src/modules/modules-system/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { TokenService } from 'src/modules/modules-system/token/token.service';
 import { SignupDto } from './dto/signup.dto';
+import { RefreshTokenDto } from './dto/refreshToken.dto';
 
 @Injectable()
 export class AuthService {
@@ -75,5 +75,30 @@ export class AuthService {
     });
 
     return true;
+  }
+
+  async refreshToken(refeshTokenDto: RefreshTokenDto) {
+    const { accessToken, refreshToken } = refeshTokenDto;
+
+    const decodeAccessToken = this.tokenService.verifyAccessToken(accessToken, {
+      ignoreExpiration: true,
+    });
+
+    const decodeRefeshToken =
+      this.tokenService.verifyRefreshToken(refreshToken);
+
+    if (decodeAccessToken.userId !== decodeRefeshToken.userId)
+      throw new UnauthorizedException(`Invalid tokens`);
+
+    const user = await this.prisma.users.findUnique({
+      where: {
+        id: Number(decodeAccessToken.userId),
+      },
+    });
+
+    if (!user) throw new UnauthorizedException(`User not found`);
+
+    const tokens = this.tokenService.createTokens(user.id);
+    return tokens;
   }
 }

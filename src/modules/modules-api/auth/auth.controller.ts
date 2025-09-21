@@ -8,12 +8,11 @@ import {
   Delete,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import { LoginDto } from './dto/login.dto';
 import { MessageResponse } from 'src/common/decorators/message-response.decorator';
 import { Public } from 'src/common/decorators/public.decorator';
 import { SignupDto } from './dto/signup.dto';
+import { RefreshTokenDto } from './dto/refreshToken.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -31,5 +30,12 @@ export class AuthController {
   @Public()
   signup(@Body() signupDto: SignupDto) {
     return this.authService.signup(signupDto);
+  }
+
+  @MessageResponse('Refresh tokens successfully!!!')
+  @Post('/refresh-token')
+  @Public()
+  refreshToken(@Body() refeshTokenDto: RefreshTokenDto) {
+    return this.authService.refreshToken(refeshTokenDto);
   }
 }
