@@ -37,13 +37,12 @@ export class AuthService {
       );
     }
 
-    const isPasswordValid = bcrypt.compareSync(password, userExist.password);
-    if (!isPasswordValid) throw new BadRequestException(`Invalid password`);
+    // const isPasswordValid = bcrypt.compareSync(password, userExist.password);
+    // if (!isPasswordValid) throw new BadRequestException(`Invalid password`);
 
     // return tokens
     const tokens = this.tokenService.createTokens(userExist.id);
 
-    console.log(tokens);
     return tokens;
   }
 

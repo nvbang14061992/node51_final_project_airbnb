@@ -12,13 +12,13 @@ import { MESSAGE_RESPONSE } from '../decorators/message-response.decorator';
 
 @Injectable()
 export class ResponseSuccessInterceptor implements NestInterceptor {
-  constructor(private relfector: Reflector) {}
+  constructor(private reflector: Reflector) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const { statusCode } = context.switchToHttp().getResponse<Response>();
     return next.handle().pipe(
       map((data) => {
-        const message = this.relfector.get(
+        const message = this.reflector.get(
           MESSAGE_RESPONSE,
           context.getHandler(),
         );

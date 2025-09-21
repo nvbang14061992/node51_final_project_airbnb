@@ -15,6 +15,7 @@ import { UpdateRoomDto } from './dto/update-room.dto';
 import { MessageResponse } from 'src/common/decorators/message-response.decorator';
 import { QueryRoomDto } from './dto/query-room.dto';
 import { QueryRoomLocationDto } from './dto/query-location.dto';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('phong-thue')
 export class RoomController {
