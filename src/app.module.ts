@@ -7,9 +7,10 @@ import { RoomModule } from './modules/modules-api/room/room.module';
 import { AuthModule } from './modules/modules-api/auth/auth.module';
 import { TokenModule } from './modules/modules-system/token/token.module';
 import { ProtectStrategy } from './common/guard/protect/protect.strategy';
+import { CommentModule } from './modules/modules-api/comment/comment.module';
 
 @Module({
-  imports: [ConfigModule, PrismaModule, RoomModule, AuthModule, TokenModule],
+  imports: [ConfigModule, PrismaModule, RoomModule, AuthModule, TokenModule, CommentModule],
   controllers: [AppController],
   providers: [AppService, ProtectStrategy],
 })
