@@ -18,8 +18,10 @@ import { QueryRoomLocationDto } from './dto/query-location.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 import type { Users } from 'generated/prisma';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('phong-thue')
+@ApiBearerAuth()
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
