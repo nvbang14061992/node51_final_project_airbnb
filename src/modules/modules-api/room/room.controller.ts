@@ -8,6 +8,8 @@ import {
   Delete,
   Query,
   Put,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { CreateRoomDto } from './dto/create-room.dto';
@@ -18,8 +20,21 @@ import { QueryRoomLocationDto } from './dto/query-location.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 import type { Users } from 'generated/prisma';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+} from '@nestjs/swagger';
 import { ExcludeFields } from 'src/common/decorators/exclude-fields.decorator';
+import { QueryRoomIdDto } from './dto/query-maphong.dto';
+import { UploadSingleDto } from './dto/uploadRoomImage.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { createMulterStorage } from 'src/common/helpers/utils';
+
+const storage = createMulterStorage('public/roomImage');
 
 @Controller('phong-thue')
 @ExcludeFields('deletedBy', 'isDeleted', 'deletedAt', 'createdAt', 'updatedAt')
@@ -68,5 +83,25 @@ export class RoomController {
   @MessageResponse('Delete one room successfully!')
   remove(@Param('id') id: string) {
     return this.roomService.remove(+id);
+  }
+
+  @Post('upload-hinh-phong')
+  @ApiOperation({ summary: 'Upload a single file' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Single file upload',
+    type: UploadSingleDto,
+  })
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage,
+    }),
+  )
+  @MessageResponse('Upload room images successfully!')
+  uploadImageLocal(
+    @Query() query: QueryRoomIdDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.roomService.uploadImageLocal(query, file);
   }
 }

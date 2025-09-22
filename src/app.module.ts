@@ -8,10 +8,35 @@ import { AuthModule } from './modules/modules-api/auth/auth.module';
 import { TokenModule } from './modules/modules-system/token/token.module';
 import { ProtectStrategy } from './common/guard/protect/protect.strategy';
 import { CommentModule } from './modules/modules-api/comment/comment.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { existsSync, mkdirSync } from 'fs';
 
 @Module({
-  imports: [ConfigModule, PrismaModule, RoomModule, AuthModule, TokenModule, CommentModule],
+  imports: [
+    ConfigModule,
+    PrismaModule,
+    RoomModule,
+    AuthModule,
+    TokenModule,
+    CommentModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      serveRoot: '/public',
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService, ProtectStrategy],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {
+    const roomImagePath = join(__dirname, '..', 'public', 'roomImage');
+    const userAvatarPath = join(__dirname, '..', 'public', 'userAvatar');
+    if (!existsSync(roomImagePath)) {
+      mkdirSync(roomImagePath, { recursive: true });
+    }
+    if (!existsSync(userAvatarPath)) {
+      mkdirSync(userAvatarPath, { recursive: true });
+    }
+  }
+}

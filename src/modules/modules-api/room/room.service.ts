@@ -4,6 +4,7 @@ import { UpdateRoomDto } from './dto/update-room.dto';
 import { PrismaService } from 'src/modules/modules-system/prisma/prisma.service';
 import { QueryRoomDto } from './dto/query-room.dto';
 import { QueryRoomLocationDto } from './dto/query-location.dto';
+import { QueryRoomIdDto } from './dto/query-maphong.dto';
 
 @Injectable()
 export class RoomService {
@@ -138,5 +139,18 @@ export class RoomService {
       throw new BadRequestException('Not exist room for this location');
 
     return roomWithgivenLocationId;
+  }
+
+  async uploadImageLocal(query: QueryRoomIdDto, file: Express.Multer.File) {
+    const roomExist = await this.findRoomExisting(query.maPhong);
+    const newRoomData = await this.prisma.phong.update({
+      data: {
+        hinh_anh: file.path,
+      },
+      where: {
+        id: roomExist.id,
+      },
+    });
+    return newRoomData;
   }
 }
