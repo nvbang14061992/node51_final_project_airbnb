@@ -33,6 +33,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { createMulterStorage } from 'src/common/helpers/utils';
+import { ImageFileValidationPipe } from 'src/modules/modules-system/file-validation/file-validation.service';
 
 const storage = createMulterStorage('public/roomImage');
 
@@ -100,7 +101,7 @@ export class RoomController {
   @MessageResponse('Upload room images successfully!')
   uploadImageLocal(
     @Query() query: QueryRoomIdDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(ImageFileValidationPipe) file: Express.Multer.File,
   ) {
     return this.roomService.uploadImageLocal(query, file);
   }

@@ -11,6 +11,7 @@ import { CommentModule } from './modules/modules-api/comment/comment.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
+import { FileValidationModule } from './modules/modules-system/file-validation/file-validation.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { existsSync, mkdirSync } from 'fs';
       rootPath: join(__dirname, '..', 'public'),
       serveRoot: '/public',
     }),
+    FileValidationModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProtectStrategy],
