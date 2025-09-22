@@ -17,7 +17,7 @@ export class CommentService {
         sao_binh_luan: 'desc',
       },
     });
-    // console.log(comments);
+
     return comments;
   }
 

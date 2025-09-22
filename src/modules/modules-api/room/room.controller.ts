@@ -19,6 +19,7 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 import type { Users } from 'generated/prisma';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { ExcludeFields } from 'src/common/decorators/exclude-fields.decorator';
 
 @Controller('phong-thue')
 @ApiBearerAuth()
@@ -26,6 +27,13 @@ export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
   @Get('/lay-phong-theo-vi-tri')
+  @ExcludeFields(
+    'deletedBy',
+    'isDeleted',
+    'deletedAt',
+    'createdAt',
+    'updatedAt',
+  )
   @MessageResponse('Get all rooms with specified location successfully!')
   findAllLocation(@Query() query: QueryRoomLocationDto) {
     return this.roomService.findAllLocation(query);
@@ -39,18 +47,39 @@ export class RoomController {
 
   @Get()
   @MessageResponse('Get all rooms successfully!')
+  @ExcludeFields(
+    'deletedBy',
+    'isDeleted',
+    'deletedAt',
+    'createdAt',
+    'updatedAt',
+  )
   findAll(@CurrentUser() user: Users) {
     console.log(user);
     return this.roomService.findAll();
   }
 
   @Get('/phan-trang-tim-kiem')
+  @ExcludeFields(
+    'deletedBy',
+    'isDeleted',
+    'deletedAt',
+    'createdAt',
+    'updatedAt',
+  )
   @MessageResponse('Get all rooms with pagination successfully!')
   findAllPagination(@Query() query: QueryRoomDto) {
     return this.roomService.findAllPagination(query);
   }
 
   @Get(':id')
+  @ExcludeFields(
+    'deletedBy',
+    'isDeleted',
+    'deletedAt',
+    'createdAt',
+    'updatedAt',
+  )
   @MessageResponse('Get one room successfully!')
   findOne(@Param('id') id: string) {
     return this.roomService.findOne(+id);
