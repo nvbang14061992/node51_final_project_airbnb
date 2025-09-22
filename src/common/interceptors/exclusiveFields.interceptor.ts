@@ -14,9 +14,15 @@ export class ExcludeFieldsInterceptor implements NestInterceptor {
   constructor(private readonly reflector: Reflector) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const fieldsToExclude =
+    const handlerFields =
       this.reflector.get<string[]>(EXCLUDE_FIELDS_KEY, context.getHandler()) ||
       [];
+
+    const classFields =
+      this.reflector.get<string[]>(EXCLUDE_FIELDS_KEY, context.getClass()) ||
+      [];
+    // Merge and deduplicate
+    const fieldsToExclude = [...new Set([...classFields, ...handlerFields])];
 
     return next.handle().pipe(
       map((data) => {
