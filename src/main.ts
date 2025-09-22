@@ -6,6 +6,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ResponseSuccessInterceptor } from './common/interceptors/response-success.interceptor';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { ProtectGuard } from './common/guard/protect/protect.guard';
+import { ExcludeFieldsInterceptor } from './common/interceptors/exclusiveFields.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -37,6 +38,8 @@ async function bootstrap() {
   //INTERCEPTORS
   app.useGlobalInterceptors(new ResponseSuccessInterceptor(reflector));
   app.useGlobalInterceptors(new LoggingInterceptor());
+  app.useGlobalInterceptors(new ExcludeFieldsInterceptor(reflector));
+
   // GUARD
   app.useGlobalGuards(new ProtectGuard(reflector));
 

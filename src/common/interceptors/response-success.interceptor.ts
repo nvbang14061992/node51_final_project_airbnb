@@ -9,6 +9,7 @@ import { Response } from 'express';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MESSAGE_RESPONSE } from '../decorators/message-response.decorator';
+import { array } from 'joi';
 
 @Injectable()
 export class ResponseSuccessInterceptor implements NestInterceptor {
@@ -23,8 +24,6 @@ export class ResponseSuccessInterceptor implements NestInterceptor {
           context.getHandler(),
         );
 
-        // delete password from data if exist
-        delete data.password;
         return {
           status: 'success',
           statusCode: statusCode,
