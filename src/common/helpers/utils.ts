@@ -1,5 +1,6 @@
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { promises as fs } from 'fs';
 
 export const createMulterStorage = (folderPath: string) =>
   diskStorage({
@@ -12,3 +13,16 @@ export const createMulterStorage = (folderPath: string) =>
       );
     },
   });
+
+export async function fileExists(filePath: string): Promise<boolean> {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function deleteFile(filePath: string): Promise<void> {
+  await fs.unlink(filePath);
+}

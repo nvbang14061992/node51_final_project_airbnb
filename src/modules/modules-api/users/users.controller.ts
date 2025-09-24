@@ -7,18 +7,30 @@ import {
   Param,
   Delete,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import { MessageResponse } from 'src/common/decorators/message-response.decorator';
 import { ExcludeFields } from 'src/common/decorators/exclude-fields.decorator';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+} from '@nestjs/swagger';
 import { SignupDto } from '../auth/dto/signup.dto';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 import type { Users } from 'generated/prisma';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { createMulterStorage } from 'src/common/helpers/utils';
+import { ImageFileValidationPipe } from 'src/modules/modules-system/file-validation/file-validation.service';
+
+const storage = createMulterStorage('public/userAvatar');
 
 @Controller('nguoi-dung')
 @ExcludeFields(
@@ -82,5 +94,25 @@ export class UsersController {
   @MessageResponse('Delete a user successfully')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
+  }
+
+  @Post('upload-avatar')
+  @ApiOperation({ summary: 'Upload user avatar' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Single file upload',
+    type: UpdateUserDto,
+  })
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage,
+    }),
+  )
+  @MessageResponse('Upload room images successfully!')
+  upLoadAvatar(
+    @UploadedFile(ImageFileValidationPipe) file: Express.Multer.File,
+    @CurrentUser() user: Users,
+  ) {
+    return this.usersService.upLoadAvatar(file, user);
   }
 }

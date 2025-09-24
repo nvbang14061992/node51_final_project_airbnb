@@ -9,6 +9,7 @@ import { binary } from 'joi';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { QueryUserDto } from './dto/query-user.dto';
+import { deleteFile, fileExists } from 'src/common/helpers/utils';
 
 @Injectable()
 export class UsersService {
@@ -145,5 +146,31 @@ export class UsersService {
     });
 
     return users;
+  }
+
+  async upLoadAvatar(file: Express.Multer.File, user) {
+    if (!file) {
+      throw new BadRequestException('Upload file not found!');
+    }
+
+    await this.prisma.users.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        avatar: file.path,
+      },
+    });
+
+    if (user.avatar) {
+      // xóa avatar đã tồn tại
+      const oldFilePath = user.avatar;
+      const filExist = await fileExists(oldFilePath);
+      if (filExist) {
+        deleteFile(oldFilePath);
+      }
+    }
+
+    return true;
   }
 }
