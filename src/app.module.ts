@@ -12,6 +12,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 import { FileValidationModule } from './modules/modules-system/file-validation/file-validation.module';
+import { UsersModule } from './modules/modules-api/users/users.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { FileValidationModule } from './modules/modules-system/file-validation/f
       serveRoot: '/public',
     }),
     FileValidationModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProtectStrategy],
