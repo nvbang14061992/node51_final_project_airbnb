@@ -33,6 +33,8 @@ async function bootstrap() {
     new ValidationPipe({
       transform: true,
       transformOptions: { enableImplicitConversion: true },
+      whitelist: true, // ✅ strips properties that are not in the DTO
+      forbidNonWhitelisted: true, // ✅ throws an error if unknown properties are present
     }),
   );
   //INTERCEPTORS

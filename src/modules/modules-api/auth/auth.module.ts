@@ -7,5 +7,6 @@ import { TokenModule } from 'src/modules/modules-system/token/token.module';
   imports: [TokenModule],
   controllers: [AuthController],
   providers: [AuthService],
+  exports: [AuthService],
 })
 export class AuthModule {}

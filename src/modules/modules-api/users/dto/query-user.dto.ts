@@ -1,15 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import {
-  IsJSON,
-  IsNotEmpty,
-  IsNumber,
-  IsNumberString,
-  IsOptional,
-  Min,
-} from 'class-validator';
+import { IsJSON, IsNotEmpty, IsNumber, IsOptional, Min } from 'class-validator';
 
-export class QueryRoomDto {
+export class QueryUserDto {
   @IsOptional()
   @IsNumber()
   @ApiProperty({ example: 1 })
@@ -22,6 +14,6 @@ export class QueryRoomDto {
 
   @IsJSON()
   @IsOptional()
-  @ApiProperty({ example: '{"ten_phong": "phong 1"}', required: false })
+  @ApiProperty({ example: '{"ten": "1"}', required: false })
   filtersStringJson: string;
 }
