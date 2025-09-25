@@ -13,6 +13,7 @@ import { join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 import { FileValidationModule } from './modules/modules-system/file-validation/file-validation.module';
 import { UsersModule } from './modules/modules-api/users/users.module';
+import { LocationModule } from './modules/modules-api/location/location.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { UsersModule } from './modules/modules-api/users/users.module';
     }),
     FileValidationModule,
     UsersModule,
+    LocationModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProtectStrategy],
