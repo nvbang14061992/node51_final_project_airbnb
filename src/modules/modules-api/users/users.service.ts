@@ -1,11 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import { PrismaService } from 'src/modules/modules-system/prisma/prisma.service';
 import { Users } from 'generated/prisma';
 import { AuthService } from '../auth/auth.service';
 import { SignupDto } from '../auth/dto/signup.dto';
-import { binary } from 'joi';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { QueryUserDto } from './dto/query-user.dto';

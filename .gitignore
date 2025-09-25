@@ -63,3 +63,5 @@ schema.prisma
 
 /public
 /generated/prisma
+
+/generated/prisma

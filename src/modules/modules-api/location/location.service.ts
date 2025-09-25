@@ -1,26 +1,141 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
+import { PrismaService } from 'src/modules/modules-system/prisma/prisma.service';
+import { QueryLocationDto } from './dto/query-location.dto';
+import { QueryIdDto } from 'src/common/dtos/query-id.dto';
+import { deleteFile, fileExists } from 'src/common/helpers/utils';
 
 @Injectable()
 export class LocationService {
-  create(createLocationDto: CreateLocationDto) {
-    return 'This action adds a new location';
+  constructor(private readonly prisma: PrismaService) {}
+
+  async findLocationExisting(id: number) {
+    const locationExist = await this.prisma.viTri.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!locationExist) throw new BadRequestException('Not found room!!!');
+
+    return locationExist;
   }
 
-  findAll() {
-    return `This action returns all location`;
+  async create(createLocationDto: CreateLocationDto) {
+    const newLocation = await this.prisma.viTri.create({
+      data: { ...createLocationDto },
+    });
+    return newLocation;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} location`;
+  async findAll() {
+    const locations = await this.prisma.viTri.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    return locations;
   }
 
-  update(id: number, updateLocationDto: UpdateLocationDto) {
-    return `This action updates a #${id} location`;
+  async findAllWithPagination(query: QueryLocationDto) {
+    let { page, pageSize, filtersStringJson } = query;
+    page = +page > 0 ? +page : 1; // avoid return error, for user experience
+    pageSize = +pageSize > 0 ? +pageSize : 10;
+    const filters = JSON.parse(filtersStringJson || '{}') || {};
+
+    const index = (page - 1) * +pageSize; // default pageSize is 3
+
+    // process filters
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value === null || value === undefined || value === '') {
+        delete filters[key];
+        return;
+      }
+
+      if (typeof value === 'string') {
+        filters[key] = {
+          contains: value,
+        };
+      }
+    });
+
+    const viTriPromise = this.prisma.viTri.findMany({
+      skip: index,
+      take: +pageSize,
+
+      where: {
+        ...filters,
+      },
+    });
+
+    // counts total rows in table
+    const totalItemsPromise = this.prisma.viTri.count();
+
+    const [viTri, totalItems] = await Promise.all([
+      viTriPromise,
+      totalItemsPromise,
+    ]);
+
+    // calculate total pages
+    const totalPages = Math.ceil(totalItems / +pageSize);
+    return {
+      page,
+      pageSize,
+      totalItem: totalItems,
+      totalPage: totalPages,
+      items: viTri || [],
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} location`;
+  async findOne(id: number) {
+    const locationExist = await this.findLocationExisting(id);
+    return locationExist;
+  }
+
+  async update(id: number, updateLocationDto: UpdateLocationDto) {
+    const locationExist = await this.findLocationExisting(id);
+    const newLocationInfo = await this.prisma.viTri.update({
+      data: { ...updateLocationDto },
+      where: { id: locationExist.id },
+    });
+    return newLocationInfo;
+  }
+
+  async remove(id: number) {
+    const locationExist = await this.findLocationExisting(id);
+    await this.prisma.viTri.delete({
+      where: {
+        id: locationExist.id,
+      },
+    });
+    return true;
+  }
+
+  async uploadImageLocal(query: QueryIdDto, file: Express.Multer.File) {
+    const locationExist = await this.findLocationExisting(+query.id);
+    if (!file) {
+      throw new BadRequestException('Upload file not found!');
+    }
+
+    await this.prisma.viTri.update({
+      where: {
+        id: locationExist.id,
+      },
+      data: {
+        hinh_anh: file.path,
+      },
+    });
+
+    if (locationExist.hinh_anh) {
+      // xóa hinh anh vi tri đã tồn tại
+      const oldFilePath = locationExist.hinh_anh;
+      const filExist = await fileExists(oldFilePath);
+      if (filExist) {
+        deleteFile(oldFilePath);
+      }
+    }
+
+    return true;
   }
 }

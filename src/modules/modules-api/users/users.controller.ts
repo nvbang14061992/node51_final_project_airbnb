@@ -29,6 +29,7 @@ import { QueryUserDto } from './dto/query-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { createMulterStorage } from 'src/common/helpers/utils';
 import { ImageFileValidationPipe } from 'src/modules/modules-system/file-validation/file-validation.service';
+import { UploadSingleDto } from './dto/uploadUserImage.dto';
 
 const storage = createMulterStorage('public/userAvatar');
 
@@ -101,7 +102,7 @@ export class UsersController {
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'Single file upload',
-    type: UpdateUserDto,
+    type: UploadSingleDto,
   })
   @UseInterceptors(
     FileInterceptor('file', {

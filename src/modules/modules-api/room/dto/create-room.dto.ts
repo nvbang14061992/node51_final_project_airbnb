@@ -100,9 +100,4 @@ export class CreateRoomDto {
   @IsBoolean()
   @ApiProperty({ example: true, required: false })
   ho_boi: boolean | null | undefined = true;
-
-  @IsOptional()
-  @IsString()
-  @ApiProperty({ example: '', required: false })
-  hinh_anh: string | null | undefined = '';
 }

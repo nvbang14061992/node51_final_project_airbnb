@@ -14,6 +14,7 @@ export class ExcludeFieldsInterceptor implements NestInterceptor {
   constructor(private readonly reflector: Reflector) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    // Get meta data from CRUD methods with given keyword EXCLUDE_FIELDS_KEY
     const handlerFields =
       this.reflector.get<string[]>(EXCLUDE_FIELDS_KEY, context.getHandler()) ||
       [];
@@ -21,21 +22,33 @@ export class ExcludeFieldsInterceptor implements NestInterceptor {
     const classFields =
       this.reflector.get<string[]>(EXCLUDE_FIELDS_KEY, context.getClass()) ||
       [];
-    // Merge and deduplicate
+    // Merge and deduplicate exclusive fields
     const fieldsToExclude = [...new Set([...classFields, ...handlerFields])];
 
     return next.handle().pipe(
       map((data) => {
-        const clean = (item: any) => {
-          if (item && typeof item === 'object') {
-            fieldsToExclude.forEach((field) => delete item[field]);
+        // Remove fields from res data
+        const clean = (item: any): any => {
+          if (Array.isArray(item)) {
+            return item.map(clean);
           }
+
+          if (item && typeof item === 'object' && item.constructor === Object) {
+            const result = { ...item };
+            fieldsToExclude.forEach((field) => {
+              delete result[field];
+            });
+
+            // Recursively clean nested properties
+            for (const key of Object.keys(result)) {
+              result[key] = clean(result[key]);
+            }
+
+            return result;
+          }
+
           return item;
         };
-
-        if (Array.isArray(data)) {
-          return data.map(clean);
-        }
 
         return clean(data);
       }),

@@ -6,5 +6,5 @@ export class QueryRoomLocationDto {
   @IsNumber()
   @Min(1)
   @ApiProperty({ example: 1 })
-  locationId: number;
+  ma_vi_tri: number;
 }

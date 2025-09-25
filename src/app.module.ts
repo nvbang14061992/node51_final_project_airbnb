@@ -14,6 +14,7 @@ import { existsSync, mkdirSync } from 'fs';
 import { FileValidationModule } from './modules/modules-system/file-validation/file-validation.module';
 import { UsersModule } from './modules/modules-api/users/users.module';
 import { LocationModule } from './modules/modules-api/location/location.module';
+import { RoomImageModule } from './modules/modules-api/room-image/room-image.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { LocationModule } from './modules/modules-api/location/location.module';
     FileValidationModule,
     UsersModule,
     LocationModule,
+    RoomImageModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProtectStrategy],
@@ -38,11 +40,15 @@ export class AppModule {
   constructor() {
     const roomImagePath = join(__dirname, '..', 'public', 'roomImage');
     const userAvatarPath = join(__dirname, '..', 'public', 'userAvatar');
+    const locationImagePath = join(__dirname, '..', 'public', 'locationImage');
     if (!existsSync(roomImagePath)) {
       mkdirSync(roomImagePath, { recursive: true });
     }
     if (!existsSync(userAvatarPath)) {
       mkdirSync(userAvatarPath, { recursive: true });
+    }
+    if (!existsSync(locationImagePath)) {
+      mkdirSync(locationImagePath, { recursive: true });
     }
   }
 }

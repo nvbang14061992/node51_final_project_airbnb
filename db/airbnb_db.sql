@@ -57,7 +57,6 @@ CREATE TABLE `Phong` (
     `do_xe`  BOOLEAN,
     `ho_boi`  BOOLEAN,
     `ma_vi_tri` INT,
-    `hinh_anh`  VARCHAR(255),
 	FOREIGN KEY (`ma_vi_tri`) REFERENCES `ViTri` (`id`),
     FOREIGN KEY (`chu_so_huu`) REFERENCES `Users`(`id`),
 	`deletedBy` INT NOT NULL DEFAULT 0,
@@ -65,6 +64,13 @@ CREATE TABLE `Phong` (
 	`deletedAt` TIMESTAMP NULL DEFAULT NULL,
 	`createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE `HinhAnh_Phong` (
+    `id` INT PRIMARY KEY AUTO_INCREMENT,
+    `phong_id` INT NOT NULL,
+    `url` VARCHAR(255) NOT NULL,
+    FOREIGN KEY (`phong_id`) REFERENCES `Phong`(`id`) ON DELETE CASCADE
 );
 
 -- Bảng DatPhong
@@ -134,30 +140,42 @@ VALUES
 INSERT INTO Phong (
     ten_phong, chu_so_huu, khach, phong_ngu, giuong, phong_tam, mo_ta, gia_tien,
     may_giat, ban_ui, tivi, dieu_hoa, wifi, bep, do_xe, ho_boi,
-    ma_vi_tri, hinh_anh
+    ma_vi_tri
 )
 VALUES
 -- Vị trí 1 (TP.HCM): 2 phòng
 ('Căn hộ HCM 1', 1, 2, 1, 1, 1, 'Căn hộ tiện nghi trung tâm HCM', 600000,
- 1, 1, 1, 1, 1, 1, 0, 0, 1, 'https://img.com/phong_hcm1.jpg'),
+ 1, 1, 1, 1, 1, 1, 0, 0, 1),
 
 ('Căn hộ HCM 2', 2, 4, 2, 2, 1, 'Căn hộ rộng rãi, gần chợ Bến Thành', 900000,
- 1, 1, 1, 1, 1, 1, 1, 0, 1, 'https://img.com/phong_hcm2.jpg'),
+ 1, 1, 1, 1, 1, 1, 1, 0, 1),
 
 -- Vị trí 2 (Đà Lạt)
 ('Biệt thự Đà Lạt', 3, 6, 3, 3, 2, 'Biệt thự có vườn và view rừng thông', 1500000,
- 1, 1, 1, 1, 1, 1, 1, 1, 2, 'https://img.com/phong_dalat.jpg'),
+ 1, 1, 1, 1, 1, 1, 1, 1, 2),
 
 ('Nhà gỗ Đà Lạt', 1, 2, 1, 1, 1, 'Nhà gỗ nhỏ xinh, không gian ấm cúng', 700000,
- 1, 0, 1, 0, 1, 1, 0, 0, 2, 'https://img.com/phong_dalat2.jpg'),
+ 1, 0, 1, 0, 1, 1, 0, 0, 2),
 
 -- Vị trí 3 (Phú Quốc)
 ('Resort Phú Quốc', 2, 5, 2, 2, 2, 'Resort 5 sao sát biển', 2000000,
- 1, 1, 1, 1, 1, 1, 1, 1, 3, 'https://img.com/phong_pq.jpg'),
+ 1, 1, 1, 1, 1, 1, 1, 1, 3),
 
 ('Bungalow Phú Quốc', 3, 3, 1, 2, 1, 'Bungalow riêng tư trong resort', 1200000,
- 0, 1, 1, 1, 1, 0, 1, 1, 3, 'https://img.com/phong_pq2.jpg');
+ 0, 1, 1, 1, 1, 0, 1, 1, 3);
 
+INSERT INTO `HinhAnh_Phong` (`phong_id`, `url`) VALUES
+(1, 'https://example.com/phong_1_image_1.jpg'),
+
+(2, 'https://example.com/phong_2_image_1.jpg'),
+
+(3, 'https://example.com/phong_3_image_1.jpg'),
+
+(4, 'https://example.com/phong_4_image_1.jpg'),
+
+(5, 'https://example.com/phong_5_image_1.jpg'),
+
+(6, 'https://example.com/phong_6_image_1.jpg');
 
 -- DATPHONG (6 lượt, có 2 lượt cùng phòng ID 1, 2 lượt của user ID 1)
 INSERT INTO DatPhong (ma_phong, ngay_den, ngay_di, so_luon_khach, ma_nguoi_dat)
