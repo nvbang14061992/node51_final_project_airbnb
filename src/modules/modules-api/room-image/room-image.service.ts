@@ -15,16 +15,16 @@ export class RoomImageService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findRoomImageExisting(id: number) {
-    const locationExist = await this.prisma.hinhAnh_Phong.findUnique({
+    const roomImage = await this.prisma.hinhAnh_Phong.findUnique({
       where: {
         id: id,
       },
     });
 
-    if (!locationExist)
+    if (!roomImage)
       throw new BadRequestException('Not found this room image!!!');
 
-    return locationExist;
+    return roomImage;
   }
 
   async create(roomId: number, file: Express.Multer.File, user: Users) {

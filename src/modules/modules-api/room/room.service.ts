@@ -13,6 +13,7 @@ export class RoomService {
     const roomExist = await this.prisma.phong.findUnique({
       where: {
         id: id,
+        isDeleted: false,
       },
     });
 
@@ -31,7 +32,11 @@ export class RoomService {
   }
 
   async findAll() {
-    const rooms = await this.prisma.phong.findMany();
+    const rooms = await this.prisma.phong.findMany({
+      where: {
+        isDeleted: false,
+      },
+    });
     return rooms;
   }
 
@@ -57,12 +62,16 @@ export class RoomService {
       }
     });
 
+    const completeFilters = {
+      ...filters,
+      isDeleted: false,
+    };
     const phongThuePromise = this.prisma.phong.findMany({
       skip: index,
       take: +pageSize,
 
       where: {
-        ...filters,
+        ...completeFilters,
       },
     });
 
@@ -108,7 +117,10 @@ export class RoomService {
   async remove(id: number) {
     const roomExist = await this.findRoomExisting(id);
 
-    await this.prisma.phong.delete({
+    await this.prisma.phong.update({
+      data: {
+        isDeleted: true,
+      },
       where: {
         id: roomExist.id,
       },
@@ -117,12 +129,13 @@ export class RoomService {
     return true;
   }
 
-  async findAllLocation(query: QueryRoomLocationDto) {
+  async findAllRoomWithLocationId(query: QueryRoomLocationDto) {
     let { ma_vi_tri } = query;
 
     const location = await this.prisma.viTri.findUnique({
       where: {
         id: ma_vi_tri,
+        isDeleted: false,
       },
     });
 
@@ -131,6 +144,7 @@ export class RoomService {
     const roomWithgivenLocationId = await this.prisma.phong.findMany({
       where: {
         ma_vi_tri: ma_vi_tri,
+        isDeleted: false,
       },
     });
 

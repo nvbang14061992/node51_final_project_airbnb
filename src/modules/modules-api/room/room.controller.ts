@@ -28,8 +28,8 @@ export class RoomController {
 
   @Get('/lay-phong-theo-vi-tri')
   @MessageResponse('Get all rooms with specified location successfully!')
-  findAllLocation(@Query() query: QueryRoomLocationDto) {
-    return this.roomService.findAllLocation(query);
+  findAllRoomWithLocationId(@Query() query: QueryRoomLocationDto) {
+    return this.roomService.findAllRoomWithLocationId(query);
   }
 
   @Post()

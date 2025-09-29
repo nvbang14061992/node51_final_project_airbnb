@@ -14,10 +14,11 @@ export class LocationService {
     const locationExist = await this.prisma.viTri.findUnique({
       where: {
         id: id,
+        isDeleted: false,
       },
     });
 
-    if (!locationExist) throw new BadRequestException('Not found room!!!');
+    if (!locationExist) throw new BadRequestException('Not found location!!!');
 
     return locationExist;
   }
@@ -31,6 +32,9 @@ export class LocationService {
 
   async findAll() {
     const locations = await this.prisma.viTri.findMany({
+      where: {
+        isDeleted: false,
+      },
       orderBy: {
         createdAt: 'desc',
       },
@@ -60,12 +64,16 @@ export class LocationService {
       }
     });
 
+    const completeFilters = {
+      ...filters,
+      isDeleted: false,
+    };
     const viTriPromise = this.prisma.viTri.findMany({
       skip: index,
       take: +pageSize,
 
       where: {
-        ...filters,
+        ...completeFilters,
       },
     });
 
@@ -104,7 +112,10 @@ export class LocationService {
 
   async remove(id: number) {
     const locationExist = await this.findLocationExisting(id);
-    await this.prisma.viTri.delete({
+    await this.prisma.viTri.update({
+      data: {
+        isDeleted: false,
+      },
       where: {
         id: locationExist.id,
       },
