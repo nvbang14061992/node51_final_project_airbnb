@@ -15,6 +15,7 @@ import { FileValidationModule } from './modules/modules-system/file-validation/f
 import { UsersModule } from './modules/modules-api/users/users.module';
 import { LocationModule } from './modules/modules-api/location/location.module';
 import { RoomImageModule } from './modules/modules-api/room-image/room-image.module';
+import { BookingModule } from './modules/modules-api/booking/booking.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { RoomImageModule } from './modules/modules-api/room-image/room-image.mod
     UsersModule,
     LocationModule,
     RoomImageModule,
+    BookingModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProtectStrategy],
