@@ -21,7 +21,11 @@ export class UsersService {
   }
 
   async findAll() {
-    const users = await this.prisma.users.findMany();
+    const users = await this.prisma.users.findMany({
+      where: {
+        isDeleted: false,
+      },
+    });
     return users;
   }
 
@@ -32,7 +36,8 @@ export class UsersService {
       },
     });
 
-    if (!userExist) throw new BadRequestException('User does not exist!!!');
+    if (!userExist || userExist.isDeleted === true)
+      throw new BadRequestException('User does not exist!!!');
 
     return userExist;
   }
@@ -82,7 +87,12 @@ export class UsersService {
 
   async remove(id: number) {
     const userExist: Users | null = await this.checkUserExist(id);
-    await this.prisma.users.delete({ where: { id: userExist.id } });
+    await this.prisma.users.update({
+      data: {
+        isDeleted: true,
+      },
+      where: { id: userExist.id },
+    });
     return `This action removes a #${id} user`;
   }
 
@@ -108,17 +118,26 @@ export class UsersService {
       }
     });
 
+    const fullFilters = {
+      isDeleted: false,
+      ...filters,
+    };
+
     const userPromise = this.prisma.users.findMany({
       skip: index,
       take: +pageSize,
 
       where: {
-        ...filters,
+        ...fullFilters,
       },
     });
 
     // counts total rows in table
-    const totalUsersPromise = this.prisma.users.count();
+    const totalUsersPromise = this.prisma.users.count({
+      where: {
+        isDeleted: false,
+      },
+    });
 
     const [rooms, totalUsers] = await Promise.all([
       userPromise,
@@ -140,6 +159,7 @@ export class UsersService {
     const users = await this.prisma.users.findMany({
       where: {
         ten: teNguoiDung,
+        isDeleted: false,
       },
     });
 
@@ -154,6 +174,7 @@ export class UsersService {
     await this.prisma.users.update({
       where: {
         id: user.id,
+        isDeleted: false,
       },
       data: {
         avatar: file.path,

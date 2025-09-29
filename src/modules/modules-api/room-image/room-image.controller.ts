@@ -6,24 +6,54 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { RoomImageService } from './room-image.service';
 import { CreateRoomImageDto } from './dto/create-room-image.dto';
 import { UpdateRoomImageDto } from './dto/update-room-image.dto';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+} from '@nestjs/swagger';
 import { MessageResponse } from 'src/common/decorators/message-response.decorator';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 import type { Users } from 'generated/prisma';
+import { ExcludeFields } from 'src/common/decorators/exclude-fields.decorator';
+import { UploadSingleImageDto } from 'src/common/dtos/upload-single-image.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ImageFileValidationPipe } from 'src/modules/modules-system/file-validation/file-validation.service';
+import { createMulterStorage } from 'src/common/helpers/utils';
+
+const storage = createMulterStorage('public/roomImage');
 
 @Controller('hinh-anh-phong-thue')
+@ExcludeFields('deletedBy', 'isDeleted', 'deletedAt', 'updatedAt')
 @ApiBearerAuth()
 export class RoomImageController {
   constructor(private readonly roomImageService: RoomImageService) {}
 
-  @Post()
+  @Post('/upload-room-imrage/:roomId')
+  @ApiOperation({ summary: 'Upload room image' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Single file upload',
+    type: UploadSingleImageDto,
+  })
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage,
+    }),
+  )
   @MessageResponse('Upload a room image successfully!')
-  create(@Body() createRoomImageDto: CreateRoomImageDto) {
-    return this.roomImageService.create(createRoomImageDto);
+  create(
+    @Param('roomId') roomId: string,
+    @UploadedFile(ImageFileValidationPipe) file: Express.Multer.File,
+    @CurrentUser() user: Users,
+  ) {
+    return this.roomImageService.create(+roomId, file, user);
   }
 
   @Get()

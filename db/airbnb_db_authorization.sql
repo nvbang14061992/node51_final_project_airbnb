@@ -69,11 +69,12 @@ CREATE TABLE `Phong` (
 
 CREATE TABLE `HinhAnh_Phong` (
     `id` INT PRIMARY KEY AUTO_INCREMENT,
-    `phong_id` INT NOT NULL,
+    `ma_phong` INT NOT NULL,
+	`ma_nguoi_tao` INT NOT NULL,
     `url` VARCHAR(255) NOT NULL,
-    FOREIGN KEY (`phong_id`) REFERENCES `Phong`(`id`) ON DELETE CASCADE
+    FOREIGN KEY (`ma_phong`) REFERENCES `Phong`(`id`) ON DELETE CASCADE,
+	FOREIGN KEY (`ma_nguoi_tao`) REFERENCES `Users`(`id`) ON DELETE CASCADE
 );
-
 -- Bảng DatPhong
 CREATE TABLE `DatPhong` (
 	`id` INT PRIMARY KEY NOT NULL AUTO_INCREMENT, 
@@ -165,18 +166,18 @@ VALUES
 ('Bungalow Phú Quốc', 3, 3, 1, 2, 1, 'Bungalow riêng tư trong resort', 1200000,
  0, 1, 1, 1, 1, 0, 1, 1, 3);
 
-INSERT INTO `HinhAnh_Phong` (`phong_id`, `url`) VALUES
-(1, 'https://example.com/phong_1_image_1.jpg'),
+INSERT INTO `HinhAnh_Phong` (`ma_phong`, `ma_nguoi_tao`, `url`) VALUES
+(1, 1, 'https://example.com/phong_1_image_1.jpg'),
 
-(2, 'https://example.com/phong_2_image_1.jpg'),
+(2, 2, 'https://example.com/phong_2_image_1.jpg'),
 
-(3, 'https://example.com/phong_3_image_1.jpg'),
+(3, 3, 'https://example.com/phong_3_image_1.jpg'),
 
-(4, 'https://example.com/phong_4_image_1.jpg'),
+(4, 1, 'https://example.com/phong_4_image_1.jpg'),
 
-(5, 'https://example.com/phong_5_image_1.jpg'),
+(5, 2, 'https://example.com/phong_5_image_1.jpg'),
 
-(6, 'https://example.com/phong_6_image_1.jpg');
+(6, 3, 'https://example.com/phong_6_image_1.jpg');
 
 
 -- DATPHONG (6 lượt, có 2 lượt cùng phòng ID 1, 2 lượt của user ID 1)
