@@ -62,6 +62,12 @@ export class RoomImageController {
     return this.roomImageService.findAll();
   }
 
+  @Get('lay-hinh-anh-phong/:maPhong')
+  @MessageResponse('Get all images of a room successfully!')
+  findImageWithRoomId(@Param('maPhong') maPhong: string) {
+    return this.roomImageService.findImageWithRoomId(+maPhong);
+  }
+
   @Get(':id')
   @MessageResponse('Get a room image successfully!')
   findOne(@Param('id') id: string) {

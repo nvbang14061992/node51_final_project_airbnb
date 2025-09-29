@@ -21,14 +21,13 @@ export class RoomImageService {
       },
     });
 
-    if (!locationExist) throw new BadRequestException('Not found room!!!');
+    if (!locationExist)
+      throw new BadRequestException('Not found this room image!!!');
 
     return locationExist;
   }
 
   async create(roomId: number, file: Express.Multer.File, user: Users) {
-    console.log('<<<<<<<<<<<<<<<<<<<<<<');
-    console.log(file.path);
     const roomExist = await this.prisma.phong.findUnique({
       where: {
         id: roomId,
@@ -87,5 +86,23 @@ export class RoomImageService {
         'Failed to delete: ' + err.message,
       );
     }
+  }
+
+  async findImageWithRoomId(maPhong: number) {
+    const roomExist = await this.prisma.phong.findUnique({
+      where: {
+        id: maPhong,
+      },
+    });
+
+    if (!roomExist) throw new BadRequestException('Room not found!!!');
+
+    const roomImages = await this.prisma.hinhAnh_Phong.findMany({
+      where: {
+        ma_phong: +roomExist.id,
+      },
+    });
+
+    return roomImages;
   }
 }
