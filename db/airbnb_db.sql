@@ -81,7 +81,7 @@ CREATE TABLE `DatPhong` (
 	`ma_phong` INT NOT NULL,
 	`ngay_den` TIMESTAMP NOT NULL,
 	`ngay_di` TIMESTAMP NOT NULL,
-    `so_luon_khach`  INT,
+    `so_luong_khach`  INT,
     `ma_nguoi_dat`  INT,
 	FOREIGN KEY (`ma_nguoi_dat`) REFERENCES `Users` (`id`),
     FOREIGN KEY (`ma_phong`) REFERENCES `Phong` (`id`),
@@ -180,7 +180,7 @@ INSERT INTO `HinhAnh_Phong` (`ma_phong`, `ma_nguoi_tao`, `url`) VALUES
 (6, 3, 'https://example.com/phong_6_image_1.jpg');
 
 -- DATPHONG (6 lượt, có 2 lượt cùng phòng ID 1, 2 lượt của user ID 1)
-INSERT INTO DatPhong (ma_phong, ngay_den, ngay_di, so_luon_khach, ma_nguoi_dat)
+INSERT INTO DatPhong (ma_phong, ngay_den, ngay_di, so_luong_khach, ma_nguoi_dat)
 VALUES
 (1, '2025-10-01', '2025-10-03', 2, 1),  -- user 1
 (1, '2025-10-05', '2025-10-07', 2, 2),  -- user 2 - cùng phòng
