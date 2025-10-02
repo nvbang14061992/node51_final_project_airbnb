@@ -79,6 +79,4 @@ export class RoomImageController {
   remove(@Param('id') id: string, @CurrentUser() user: Users) {
     return this.roomImageService.remove(+id, user);
   }
-
-  // TODO add service for get room image with image id
 }

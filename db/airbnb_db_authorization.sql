@@ -295,11 +295,13 @@ VALUES
 ('Xem người dùng theo phân trang', '/api/nguoi-dung/phan-trang-tim-kiem', 'GET', 'users'),
 ('Xem người dùng theo tên', '/api/nguoi-dung/search/{TenNguoiDung}', 'GET', 'users'),
 ('upload hình đại diện người dùng', '/api/nguoi-dung/upload-avatar', 'POST', 'users'),
+('Đăng ký làm host', '/api/nguoi-dung/register-host', 'POST', 'users'),
+('get profile info', '/api/nguoi-dung/get-info', 'GET', 'users'),
 
 ('upload hình phòng', '/api/hinh-anh-phong-thue/upload-room-image/:roomId', 'POST', 'room-image'),
 ('Xem hình phòng', '/api/hinh-anh-phong-thue/', 'GET', 'room-image'),
 ('Xem hình phòng theo mã hình ảnh phòng', '/api/hinh-anh-phong-thue/:id', 'GET', 'room-image'),
-('Xem hình phòng theo phân trang', '/api/hinh-anh-phong-thue/', 'GET', 'room-image'),
+('Xem hình phòng theo ma phong', '/api/hinh-anh-phong-thue/:maPhong', 'GET', 'room-image'),
 ('Xóa hình ảnh phòng', '/api/hinh-anh-phong-thue/:id', 'DELETE', 'room-image');
 
 -- User (vai trò 2)
@@ -328,8 +330,8 @@ VALUES
 (2, 30),  -- Sửa thông profile người dùng
 (2, 34),  -- upload hình đại diện người dùng
 
-(2, 37),   -- Xem hình phòng theo mã hình ảnh phòng
-(2, 38);   -- Xem hình phòng theo phân trang
+(2, 39),   -- Xem hình phòng theo mã hình ảnh phòng
+(2, 40);   -- Xem hình phòng theo phân trang
 
 -- Host (vai trò 3)
 INSERT INTO PhanQuyen (ma_vai_tro, ma_quyen)
@@ -355,10 +357,10 @@ VALUES
 (3, 30),  -- Sửa thông profile người dùng
 (3, 34),  -- upload hình đại diện người dùng
 
-(3, 35),   -- upload hình phòng
-(3, 37),   -- Xem hình phòng theo mã hình ảnh phòng
-(3, 38),   -- Xem hình phòng theo phân trang
-(3, 39);   -- Xóa hình ảnh phòng
+(3, 37),   -- upload hình phòng
+(3, 39),   -- Xem hình phòng theo mã hình ảnh phòng
+(3, 40),   -- Xem hình phòng theo phân trang
+(3, 41);   -- Xóa hình ảnh phòng
 
 -- Admin (vai trò 1)
 INSERT INTO PhanQuyen (ma_vai_tro, ma_quyen)

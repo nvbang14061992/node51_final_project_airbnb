@@ -197,9 +197,6 @@ export class UsersService {
   async registerHost(user: Users) {
     if (user.roleId === 1) return true;
 
-    if (user.roleId === 3)
-      throw new BadRequestException('You are already a host');
-
     await this.prisma.users.update({
       data: {
         roleId: 3,
@@ -210,5 +207,18 @@ export class UsersService {
     });
 
     return true;
+  }
+
+  async getInfo(user: Users) {
+    const userInfo = await this.prisma.users.findUnique({
+      where: {
+        id: user.id,
+      },
+      omit: {
+        password: true,
+      },
+    });
+
+    return userInfo;
   }
 }

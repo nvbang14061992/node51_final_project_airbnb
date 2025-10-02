@@ -30,6 +30,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { createMulterStorage } from 'src/common/helpers/utils';
 import { ImageFileValidationPipe } from 'src/modules/modules-system/file-validation/file-validation.service';
 import { UploadSingleDto } from './dto/uploadUserImage.dto';
+import { SkipPermission } from 'src/common/decorators/skip-permission.decorator';
 
 const storage = createMulterStorage('public/userAvatar');
 
@@ -77,6 +78,13 @@ export class UsersController {
     @CurrentUser() user: Users,
   ) {
     return this.usersService.updateProfile(updateUserDto, user);
+  }
+
+  @Get('get-info/')
+  @MessageResponse('Get user info successfully')
+  getInfo(@CurrentUser() user: Users) {
+    // TODO retest on postman for this api
+    return this.usersService.getInfo(user);
   }
 
   @Get(':id')
