@@ -83,7 +83,6 @@ export class UsersController {
   @Get('get-info/')
   @MessageResponse('Get user info successfully')
   getInfo(@CurrentUser() user: Users) {
-    // TODO retest on postman for this api
     return this.usersService.getInfo(user);
   }
 

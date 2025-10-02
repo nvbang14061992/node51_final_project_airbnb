@@ -192,6 +192,7 @@ VALUES
 ('Bungalow Phú Quốc', 3, 3, 1, 2, 1, 'Bungalow riêng tư trong resort', 1200000,
  0, 1, 1, 1, 1, 0, 1, 1, 3);
 
+
 INSERT INTO `HinhAnh_Phong` (`ma_phong`, `ma_nguoi_tao`, `url`) VALUES
 (1, 1, 'https://example.com/phong_1_image_1.jpg'),
 
@@ -329,9 +330,11 @@ VALUES
 (2, 28),  -- Xem người dùng theo mã người dùng
 (2, 30),  -- Sửa thông profile người dùng
 (2, 34),  -- upload hình đại diện người dùng
+(2, 35),  -- upload hình đại diện người dùng
+(2, 36),  -- upload hình đại diện người dùng
 
 (2, 39),   -- Xem hình phòng theo mã hình ảnh phòng
-(2, 40);   -- Xem hình phòng theo phân trang
+(2, 40);   -- Xem hình phòng theo ma phong
 
 -- Host (vai trò 3)
 INSERT INTO PhanQuyen (ma_vai_tro, ma_quyen)
@@ -356,10 +359,11 @@ VALUES
 (3, 28),  -- Xem người dùng theo mã người dùng
 (3, 30),  -- Sửa thông profile người dùng
 (3, 34),  -- upload hình đại diện người dùng
+(3, 36),  -- upload hình đại diện người dùng
 
 (3, 37),   -- upload hình phòng
 (3, 39),   -- Xem hình phòng theo mã hình ảnh phòng
-(3, 40),   -- Xem hình phòng theo phân trang
+(3, 40),   -- Xem hình phòng theo ma phong
 (3, 41);   -- Xóa hình ảnh phòng
 
 -- Admin (vai trò 1)
