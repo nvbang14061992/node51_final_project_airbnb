@@ -8,6 +8,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { QueryUserDto } from './dto/query-user.dto';
 import { deleteFile, fileExists } from 'src/common/helpers/utils';
+import { use } from 'passport';
 
 @Injectable()
 export class UsersService {
@@ -189,6 +190,24 @@ export class UsersService {
         deleteFile(oldFilePath);
       }
     }
+
+    return true;
+  }
+
+  async registerHost(user: Users) {
+    if (user.roleId === 1) return true;
+
+    if (user.roleId === 3)
+      throw new BadRequestException('You are already a host');
+
+    await this.prisma.users.update({
+      data: {
+        roleId: 3,
+      },
+      where: {
+        id: user.id,
+      },
+    });
 
     return true;
   }

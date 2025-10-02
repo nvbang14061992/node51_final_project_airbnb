@@ -116,4 +116,12 @@ export class UsersController {
   ) {
     return this.usersService.upLoadAvatar(file, user);
   }
+
+  @Post('register-host/')
+  @MessageResponse(
+    'Register to be host successfully.\nYou now can create new location and host rooms from locations, but can not comment on any post!',
+  )
+  registerHost(@CurrentUser() user: Users) {
+    return this.usersService.registerHost(user);
+  }
 }
