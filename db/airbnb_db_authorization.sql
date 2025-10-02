@@ -5,6 +5,19 @@ SELECT VERSION();
 CREATE DATABASE IF NOT EXISTS db_airbnb;
 USE db_airbnb;
 
+CREATE TABLE VaiTro (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    vai_tro VARCHAR(255) NOT NULL UNIQUE,
+    mo_ta TEXT,
+    isActive TINYINT(1) DEFAULT 1,
+    deletedBy INT NOT NULL DEFAULT 0,
+    isDeleted TINYINT(1) NOT NULL DEFAULT 0,
+    deletedAt TIMESTAMP NULL DEFAULT NULL,
+    createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
 -- Bảng Users
 CREATE TABLE `Users` (
 	`id` INT PRIMARY KEY NOT NULL AUTO_INCREMENT, 
@@ -15,7 +28,10 @@ CREATE TABLE `Users` (
     `ngay_sinh`  VARCHAR(255),
     `gioi_tinh`  BOOLEAN,
 	`avatar` VARCHAR(255) DEFAULT NULL,
-	`vai_tro`  VARCHAR(255) DEFAULT 'user',
+	`roleId`  INT NOT NULL DEFAULT 2,
+
+    FOREIGN KEY (`roleId`) REFERENCES `VaiTro` (`id`),
+
 	`deletedBy` INT NOT NULL DEFAULT 0,
 	`isDeleted` TINYINT(1) NOT NULL DEFAULT 0,
 	`deletedAt` TIMESTAMP NULL DEFAULT NULL,
@@ -67,6 +83,7 @@ CREATE TABLE `Phong` (
 	`updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+
 CREATE TABLE `HinhAnh_Phong` (
     `id` INT PRIMARY KEY AUTO_INCREMENT,
     `ma_phong` INT NOT NULL,
@@ -75,13 +92,15 @@ CREATE TABLE `HinhAnh_Phong` (
     FOREIGN KEY (`ma_phong`) REFERENCES `Phong`(`id`) ON DELETE CASCADE,
 	FOREIGN KEY (`ma_nguoi_tao`) REFERENCES `Users`(`id`) ON DELETE CASCADE
 );
+
+
 -- Bảng DatPhong
 CREATE TABLE `DatPhong` (
 	`id` INT PRIMARY KEY NOT NULL AUTO_INCREMENT, 
 	`ma_phong` INT NOT NULL,
 	`ngay_den` TIMESTAMP NOT NULL,
 	`ngay_di` TIMESTAMP NOT NULL,
-    `so_luon_khach`  INT,
+    `so_luong_khach`  INT,
     `ma_nguoi_dat`  INT,
 	FOREIGN KEY (`ma_nguoi_dat`) REFERENCES `Users` (`id`),
     FOREIGN KEY (`ma_phong`) REFERENCES `Phong` (`id`),
@@ -123,12 +142,19 @@ CREATE TABLE `Notification` (
 );
 
 -- Du lieu mo phong
--- USERS (3 người dùng)
-INSERT INTO Users (email, ten, mat_khau, so_dien_thoai, ngay_sinh, gioi_tinh, vai_tro)
+INSERT INTO VaiTro (id, vai_tro, mo_ta)
 VALUES
-('user1@gmail.com', 'Nguyen Van A', 'pass123', '0909000001', '1990-01-01', 1, 'user'),
-('user2@gmail.com', 'Tran Thi B', 'pass234', '0909000002', '1992-02-02', 0, 'user'),
-('user3@gmail.com', 'Le Van C', 'pass345', '0909000003', '1988-03-03', 1, 'user');
+(1, 'admin', 'Người quản trị hệ thống, có toàn quyền.'),
+(2, 'user', 'Người dùng thường, đặt phòng và bình luận.'),
+(3, 'host', 'Người cung cấp phòng và địa điểm.');
+
+-- Du lieu mo phong
+-- USERS (3 người dùng)
+INSERT INTO Users (email, ten, password, so_dien_thoai, ngay_sinh, gioi_tinh, roleId)
+VALUES
+('user1@gmail.com', 'Nguyen Van A', 'pass123', '0909000001', '1990-01-01', 1, 1),
+('user2@gmail.com', 'Tran Thi B', 'pass234', '0909000002', '1992-02-02', 0, 2),
+('user3@gmail.com', 'Le Van C', 'pass345', '0909000003', '1988-03-03', 1, 3);
 
 -- VITRI (3 vị trí)
 INSERT INTO ViTri (ten_vi_tri, tinh_thanh, quoc_gia, hinh_anh)
@@ -181,7 +207,7 @@ INSERT INTO `HinhAnh_Phong` (`ma_phong`, `ma_nguoi_tao`, `url`) VALUES
 
 
 -- DATPHONG (6 lượt, có 2 lượt cùng phòng ID 1, 2 lượt của user ID 1)
-INSERT INTO DatPhong (ma_phong, ngay_den, ngay_di, so_luon_khach, ma_nguoi_dat)
+INSERT INTO DatPhong (ma_phong, ngay_den, ngay_di, so_luong_khach, ma_nguoi_dat)
 VALUES
 (1, '2025-10-01', '2025-10-03', 2, 1),  -- user 1
 (1, '2025-10-05', '2025-10-07', 2, 2),  -- user 2 - cùng phòng
@@ -200,24 +226,12 @@ VALUES
 
 -- Them chuc nang phan quyen
 
-CREATE TABLE VaiTro (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    vai_tro VARCHAR(255) NOT NULL UNIQUE,
-    mo_ta TEXT,
-    isActive TINYINT(1) DEFAULT 1,
-    deletedBy INT NOT NULL DEFAULT 0,
-    isDeleted TINYINT(1) NOT NULL DEFAULT 0,
-    deletedAt TIMESTAMP NULL DEFAULT NULL,
-    createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
 CREATE TABLE Quyen (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    mo_ta TEXT,
-    endpoint VARCHAR(255),
-    method VARCHAR(10),
-    module VARCHAR(255),
+    name VARCHAR(255) NOT NULL,
+    endpoint VARCHAR(255) NOT NULL,
+    method VARCHAR(10) NOT NULL,
+    module VARCHAR(100) NOT NULL,
     deletedBy INT NOT NULL DEFAULT 0,
     isDeleted TINYINT(1) NOT NULL DEFAULT 0,
     deletedAt TIMESTAMP NULL DEFAULT NULL,
@@ -241,86 +255,110 @@ CREATE TABLE PhanQuyen (
 
 
 
--- Du lieu mo phong
-INSERT INTO VaiTro (id, vai_tro, mo_ta)
+INSERT INTO Quyen (name, endpoint, method, module)
 VALUES
-(1, 'admin', 'Người quản trị hệ thống, có toàn quyền.'),
-(2, 'user', 'Người dùng thường, đặt phòng và bình luận.'),
-(3, 'host', 'Người cung cấp phòng và địa điểm.');
+('Đặt phòng', '/api/dat-phong', 'POST', 'booking'),
+('Xem đặt phòng', '/api/dat-phong', 'GET', 'booking'),
+('xem đặt phòng theo mã đặt phòng', '/api/dat-phong/:id', 'GET', 'booking'),
+('xem đặt phòng theo mã người dùng', '/api/dat-phong/lay-theo-nguoi-dung/:MaNguoiDung', 'GET', 'booking'),
+('Sửa đặt phòng', '/api/dat-phong/:id', 'PATCH', 'booking'),
+('Xóa đặt phòng', '/api/dat-phong/:id', 'DELETE', 'booking'),
 
+('Tạo bình luận', '/api/binh-luan', 'POST', 'comment'),
+('Xem cả luận', '/api/binh-luan', 'GET', 'comment'),
+('Sửa bình luận', '/api/binh-luan/:id', 'PATCH', 'comment'),
+('Xoá bình luận', '/api/binh-luan/:id', 'DELETE', 'comment'),
+('Xem bình luận theo phong', '/api/binh-luan/lay-binh-luan-theo-phong/:MaPhong', 'GET', 'comment'),
 
-INSERT INTO Quyen (mo_ta, endpoint, method, module)
-VALUES
-('Đặt phòng', '/dat-phong', 'POST', 'DatPhong'),
-('Xem đặt phòng', '/dat-phong', 'GET', 'DatPhong'),
-('xem đặt phòng theo mã đặt phòng', '/dat-phong/:id', 'GET', 'DatPhong'),
-('Sửa đặt phòng', '/dat-phong/:id', 'PUT', 'DatPhong'),
-('Xóa đặt phòng', '/dat-phong/:id', 'DELETE', 'DatPhong'),
-('Tạo bình luận', '/binh-luan', 'POST', 'BinhLuan'),
-('Xem bình luận', '/binh-luan', 'GET', 'BinhLuan'),
-('Sửa bình luận', '/binh-luan/:id', 'PUT', 'BinhLuan'),
-('Xoá bình luận', '/binh-luan/:id', 'DELETE', 'BinhLuan'),
-('Xem bình luận theo phong', '/binh-luan/lay-binh-luan-theo-phong/:ma_phong', 'GET', 'BinhLuan'),
-('Xem phòng', '/phong', 'GET', 'Phong'),
-('Xem một phòng', '/phong/:id', 'GET', 'Phong'),
-('Xem phòng theo vị trí', '/phong/lay-phong-theo-vi-tri', 'GET', 'Phong'),
-('Xem phòng theo phân trang', '/phong/phan-trang-tim-kiem', 'GET', 'Phong'),
-('upload hình phòng', '/phong/upload-hinh-phong', 'POST', 'Phong'),
-('Tạo phòng', '/phong', 'POST', 'Phong'),
-('Xem vị trí', '/vi-tri', 'GET', 'ViTri'),
-('Xem vị trí theo mã vị trí', '/vi-tri/:id', 'GET', 'ViTri'),
-('Tạo vị trí', '/vi-tri', 'POST', 'ViTri'),
-('Sửa vị trí', '/vi-tri/:id', 'PUT', 'ViTri'),
-('Xóa vị trí', '/vi-tri/:id', 'DELETE', 'ViTri'),
-('Xem vị trí theo phân trang', '/vi-tri/phan-trang-tim-kiem', 'GET', 'ViTri'),
-('upload hình vị trí', '/vi-tri/upload-hinh-phong', 'POST', 'ViTri'),
-('Xem người dùng', '/users', 'GET', 'Users'),
-('Xem người dùng theo mã người dùng', '/users/:id', 'GET', 'Users'),
-('Tạo người dùng', '/users/:id', 'POST', 'Users'),
-('Sửa người dùng', '/users/:id', 'PUT', 'Users'),
-('Xóa người dùng', '/users/:id', 'DELETE', 'Users'),
-('Xem người dùng theo phân trang', '/users/phan-trang-tim-kiem', 'GET', 'Users'),
-('Xem người dùng theo mã tên', '/users/search/{TenNguoiDung}', 'GET', 'Users'),
-('upload hình đại diện người dùng', '/users/upload-avatar', 'POST', 'Users'),
+('Tạo phòng', '/api/phong-thue', 'POST', 'room'),
+('Xem phòng', '/api/phong-thue', 'GET', 'room'),
+('Xem phòng theo mã phòng', '/api/phong-thue/:id', 'GET', 'room'),
+('Sửa thông tin phòng', '/api/phong-thue/:id', 'PATCH', 'room'),
+('Xóa một phòng', '/api/phong-thue/:id', 'DELETE', 'room'),
+('Xem phòng theo vị trí', '/api/phong-thue/lay-phong-theo-vi-tri', 'GET', 'room'),
+('Xem phòng theo phân trang', '/api/phong-thue/phan-trang-tim-kiem', 'GET', 'room'),
 
+('Tạo vị trí', '/api/vi-tri', 'POST', 'location'),
+('Xem vị trí', '/api/vi-tri', 'GET', 'location'),
+('Xem vị trí theo mã vị trí', '/api/vi-tri/:id', 'GET', 'location'),
+('Sửa vị trí', '/api/vi-tri/:id', 'PATCH', 'location'),
+('Xóa vị trí', '/api/vi-tri/:id', 'DELETE', 'location'),
+('Xem vị trí theo phân trang', '/api/vi-tri/phan-trang-tim-kiem', 'GET', 'location'),
+('upload hình vị trí', '/api/vi-tri/upload-hinh-vitri', 'POST', 'location'),
+
+('Tạo người dùng', '/api/nguoi-dung/:id', 'POST', 'users'),
+('Xem người dùng', '/api/nguoi-dung', 'GET', 'users'),
+('Xem người dùng theo mã người dùng', '/api/nguoi-dung/:id', 'GET', 'users'),
+('Sửa thông tin người dùng', '/api/nguoi-dung/:id', 'PATCH', 'users'),
+('Sửa thông profile người dùng', '/api/nguoi-dung/update-profile', 'PATCH', 'users'),
+('Xóa người dùng', '/api/nguoi-dung/:id', 'DELETE', 'users'),
+('Xem người dùng theo phân trang', '/api/nguoi-dung/phan-trang-tim-kiem', 'GET', 'users'),
+('Xem người dùng theo tên', '/api/nguoi-dung/search/{TenNguoiDung}', 'GET', 'users'),
+('upload hình đại diện người dùng', '/api/nguoi-dung/upload-avatar', 'POST', 'users'),
+
+('upload hình phòng', '/api/hinh-anh-phong-thue/upload-room-image/:roomId', 'POST', 'room-image'),
+('Xem hình phòng', '/api/hinh-anh-phong-thue/', 'GET', 'room-image'),
+('Xem hình phòng theo mã hình ảnh phòng', '/api/hinh-anh-phong-thue/:id', 'GET', 'room-image'),
+('Xem hình phòng theo phân trang', '/api/hinh-anh-phong-thue/', 'GET', 'room-image'),
+('Xóa hình ảnh phòng', '/api/hinh-anh-phong-thue/:id', 'DELETE', 'room-image');
 
 -- User (vai trò 2)
 INSERT INTO PhanQuyen (ma_vai_tro, ma_quyen)
 VALUES
 (2, 1),  -- Đặt phòng
-(2, 2),  -- Xem đặt phòng
 (2, 3),  -- xem đặt phòng theo mã đặt phòng
-(2, 4),  -- Sửa đặt phòng
-(2, 5),  -- Xóa đặt phòng
-(2, 6),  -- Tạo bình luận
-(2, 10),  -- Xem bình luận theo phòng
-(2, 8),  -- Sửa bình luận
-(2, 9),  -- Xoá bình luận
-(2, 11),  -- Xem phòng
-(2, 12),  -- Xem một phòng
-(2, 13),  -- Xem phòng theo vị trí
-(2, 14),  -- Xem phòng phan trang
-(2, 17);  -- Xem vị trí
-(2, 18);  -- Xem vị trí theo mã vị trí
-(2, 22);  -- Xem vị trí phân trang
-(2, 25);  -- Xem người dùng theo mã người dùng
-(2, 27);  -- Sửa người dùngdùng
-(2, 31);  -- upload hình đại diện người dùng
+(2, 4),  -- xem đặt phòng theo mã người dùng
+(2, 5),  -- Sửa đặt phòng
+(2, 6),  -- Xóa đặt phòng
+
+(2, 7),  -- Tạo bình luận
+(2, 9),  -- Sửa bình luận
+(2, 10),  -- Xoá bình luận
+(2, 11),  -- Xem bình luận theo phòng
+
+
+(2, 14),  -- Xem phòng theo mã phòng
+(2, 17),  -- Xem phòng theo vị trí
+(2, 18),  -- Xem phòng theo phân trang
+
+(2, 21),  -- Xem vị trí theo mã vị trí
+(2, 24),  -- Xem vị trí theo phân trang
+
+(2, 28),  -- Xem người dùng theo mã người dùng
+(2, 30),  -- Sửa thông profile người dùng
+(2, 34),  -- upload hình đại diện người dùng
+
+(2, 37),   -- Xem hình phòng theo mã hình ảnh phòng
+(2, 38);   -- Xem hình phòng theo phân trang
 
 -- Host (vai trò 3)
 INSERT INTO PhanQuyen (ma_vai_tro, ma_quyen)
 VALUES
-(3, 2),  -- Xem đặt phòng
 (3, 3),  -- xem đặt phòng theo mã đặt phòng
-(3, 11),  -- Xem phòng
-(3, 16),  -- Tạo phòng
-(3, 15)   -- upload hình phòng
-(3, 17);  -- Xem vị trí
-(3, 18);  -- Xem vị trí theo mã vị trí
-(3, 22);  -- Xem vị trí phân trang
-(3, 25);  -- Xem người dùng theo mã người dùng
-(3, 27);  -- Sửa người dùngdùng
-(3, 31);  -- upload hình đại diện người dùng
+(3, 4),  -- xem đặt phòng theo mã người dùng
+
+(3, 12),  -- Tạo phòng
+(3, 14),  -- Xem một phòng
+(3, 15),  -- Sửa thông tin phòng
+(3, 15),  -- Xoá một phòng
+(3, 17),  -- Xem phòng theo vị trí
+(3, 18),  -- Xem phòng theo phân trang
+
+(3, 19),  -- Tạo vị trí
+(3, 21),  -- Xem vị trí theo mã vị trí
+(3, 22),  -- Sửa vị trí
+(3, 23),  -- Xóa vị trí
+(3, 24),  -- Xem vị trí phân trang
+(3, 25),  -- upload hình vị trí
+
+(3, 28),  -- Xem người dùng theo mã người dùng
+(3, 30),  -- Sửa thông profile người dùng
+(3, 34),  -- upload hình đại diện người dùng
+
+(3, 35),   -- upload hình phòng
+(3, 37),   -- Xem hình phòng theo mã hình ảnh phòng
+(3, 38),   -- Xem hình phòng theo phân trang
+(3, 39);   -- Xóa hình ảnh phòng
 
 -- Admin (vai trò 1)
 INSERT INTO PhanQuyen (ma_vai_tro, ma_quyen)

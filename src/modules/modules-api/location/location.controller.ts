@@ -27,6 +27,7 @@ import { createMulterStorage } from 'src/common/helpers/utils';
 import { ImageFileValidationPipe } from 'src/modules/modules-system/file-validation/file-validation.service';
 import { UploadSingleImageDto } from 'src/common/dtos/upload-single-image.dto';
 import { QueryIdDto } from 'src/common/dtos/query-id.dto';
+import { SkipPermission } from 'src/common/decorators/skip-permission.decorator';
 
 const storage = createMulterStorage('public/locationImage');
 

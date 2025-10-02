@@ -7,6 +7,7 @@ import { ResponseSuccessInterceptor } from './common/interceptors/response-succe
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { ProtectGuard } from './common/guard/protect/protect.guard';
 import { ExcludeFieldsInterceptor } from './common/interceptors/exclusiveFields.interceptor';
+import { PermissionGuard } from './common/guard/permission/permission.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -44,6 +45,7 @@ async function bootstrap() {
 
   // GUARD
   app.useGlobalGuards(new ProtectGuard(reflector));
+  app.useGlobalGuards(new PermissionGuard(reflector));
 
   const configService = app.get(ConfigService);
   const port = configService.get('PORT');

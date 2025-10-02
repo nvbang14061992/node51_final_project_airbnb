@@ -35,7 +35,7 @@ const storage = createMulterStorage('public/roomImage');
 export class RoomImageController {
   constructor(private readonly roomImageService: RoomImageService) {}
 
-  @Post('/upload-room-imrage/:roomId')
+  @Post('/upload-room-image/:roomId')
   @ApiOperation({ summary: 'Upload room image' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -79,4 +79,6 @@ export class RoomImageController {
   remove(@Param('id') id: string, @CurrentUser() user: Users) {
     return this.roomImageService.remove(+id, user);
   }
+
+  // TODO add service for get room image with image id
 }

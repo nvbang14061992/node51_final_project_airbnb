@@ -16,6 +16,7 @@ import { UsersModule } from './modules/modules-api/users/users.module';
 import { LocationModule } from './modules/modules-api/location/location.module';
 import { RoomImageModule } from './modules/modules-api/room-image/room-image.module';
 import { BookingModule } from './modules/modules-api/booking/booking.module';
+import { PermissionStrategy } from './common/guard/permission/permission.strategy';
 
 @Module({
   imports: [
@@ -36,7 +37,7 @@ import { BookingModule } from './modules/modules-api/booking/booking.module';
     BookingModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ProtectStrategy],
+  providers: [AppService, ProtectStrategy, PermissionStrategy],
 })
 export class AppModule {
   constructor() {
