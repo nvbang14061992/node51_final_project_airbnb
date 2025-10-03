@@ -21,6 +21,8 @@ import { NotificationModule } from './modules/modules-api/notification/notificat
 import { RealtimeNotificationModule } from './modules/modules-system/realtime-notification/realtime-notification.module';
 import { ConfigService } from './modules/modules-system/config/config.service';
 
+import { ThrottlerModuleCustom } from './modules/modules-system/rate-limiting/throttle.module';
+
 @Module({
   imports: [
     ConfigModule,
@@ -40,6 +42,7 @@ import { ConfigService } from './modules/modules-system/config/config.service';
     BookingModule,
     NotificationModule,
     RealtimeNotificationModule,
+    ThrottlerModuleCustom,
   ],
   controllers: [AppController],
   providers: [AppService, ProtectStrategy, PermissionStrategy, ConfigService],

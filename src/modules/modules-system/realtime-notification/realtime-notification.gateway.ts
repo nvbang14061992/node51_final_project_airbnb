@@ -40,7 +40,12 @@ export class RealtimeNotificationGateway
       }
 
       const payload = this.jwtService.verify(token);
-      const hostId = payload.userId;
+      const hostId = payload?.userId;
+
+      if (!hostId) {
+        this.logger.warn('token invalid');
+        return client.disconnect();
+      }
 
       client.data.user = payload;
 
@@ -54,7 +59,7 @@ export class RealtimeNotificationGateway
           client.disconnect(true);
           this.logger.log(`Client ${client.id} TTL disconnect`);
         }
-      }, 30000);
+      }, 3000);
     } catch (err) {
       this.logger.error(`JWT validation failed: ${err.message}`);
       client.disconnect();
