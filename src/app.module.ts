@@ -17,7 +17,7 @@ import { LocationModule } from './modules/modules-api/location/location.module';
 import { RoomImageModule } from './modules/modules-api/room-image/room-image.module';
 import { BookingModule } from './modules/modules-api/booking/booking.module';
 import { PermissionStrategy } from './common/guard/permission/permission.strategy';
-import { NotificationModule } from './modules/modules-system/notification/notification.module';
+import { NotificationModule } from './modules/modules-api/notification/notification.module';
 
 @Module({
   imports: [

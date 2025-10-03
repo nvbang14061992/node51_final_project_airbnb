@@ -128,19 +128,6 @@ CREATE TABLE `BinhLuan` (
 );
 
 
--- Bảng notification
-CREATE TABLE `Notification` (
-    `id` INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    `nguoi_nhan_id` INT NOT NULL, -- Chủ nhà
-    `noi_dung` VARCHAR(500) NOT NULL,
-    `ma_dat_phong` INT,
-    `da_doc` TINYINT(1) NOT NULL DEFAULT 0, -- 0: chưa đọc, 1: đã đọc
-    `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (`nguoi_nhan_id`) REFERENCES `Users`(`id`),
-    FOREIGN KEY (`ma_dat_phong`) REFERENCES `DatPhong`(`id`)
-);
-
 -- Du lieu mo phong
 INSERT INTO VaiTro (id, vai_tro, mo_ta)
 VALUES
@@ -369,3 +356,21 @@ VALUES
 -- Admin (vai trò 1)
 INSERT INTO PhanQuyen (ma_vai_tro, ma_quyen)
 SELECT 1, id FROM Quyen;
+
+
+-- Notification service
+
+CREATE TABLE `Notification` (
+  `id` INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `bookingId` INT NULL,                           -- Optional FK to DatPhong
+  `receiverId` INT NOT NULL,                      -- Target host user
+  `type` ENUM('booking', 'message', 'alert') NOT NULL DEFAULT 'booking',
+  `title` VARCHAR(255) NOT NULL,
+  `message` TEXT NULL,
+  `isRead` TINYINT(1) NOT NULL DEFAULT 0,
+  `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
+  FOREIGN KEY (`bookingId`) REFERENCES `DatPhong` (`id`) ON DELETE SET NULL,
+  FOREIGN KEY (`receiverId`) REFERENCES `Users` (`id`) ON DELETE CASCADE
+);

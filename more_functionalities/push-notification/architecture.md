@@ -1,29 +1,30 @@
-```mermaid
-sequenceDiagram
-    participant Guest as Guest Client
-    participant Backend as Node.js Backend
-    participant Socket as Socket.IO Server
-    participant Host as Host Client
-    participant DB as Notification DB
-    participant Email as Email Service
-
-    Guest->>Backend: POST /bookings
-    Backend->>Backend: Validate & Save booking
-    Backend->>DB: Save notification record
-    Backend->>Socket: Emit 'new_booking' to host_{hostId}
-    alt Host is online
-        Socket-->>Host: Push 'new_booking' event
-        Host-->>Host: Display real-time alert
-    else Host is offline
-        Backend->>Email: Send email notification
-    end
-
-
-```
-
 # 📡 Hybrid Notification System – Implementation Roadmap
 
 Supports both real-time (WebSocket) and static (API-based) notifications for hosts after P_room bookings.
+
+```mermaid
+graph TD
+  A["User books P_room (physical room)"] --> B[BookingModule]
+  B --> C[NotificationService]
+  C -->|Store notification in DB| D[Database]
+  C -->|Emit to S_room| E["WebSocketGateway (Short-lived S_room ~2-3s)"]
+
+  E --> F["Host Client Devices (WebSocket Connected)"]
+  F -->|Receive real-time notification| G[Display notification]
+
+  H[Host Frontend UI] <-->|Poll/Fetch notification count & list| I["Static Notification API (REST)"]
+  I --> D
+
+  style A fill:#f9f,stroke:#333,stroke-width:2px
+  style B fill:#bbf,stroke:#333,stroke-width:2px
+  style C fill:#bbf,stroke:#333,stroke-width:2px
+  style D fill:#afa,stroke:#333,stroke-width:2px
+  style E fill:#bbf,stroke:#333,stroke-width:2px
+  style F fill:#fcc,stroke:#333,stroke-width:2px
+  style G fill:#cff,stroke:#333,stroke-width:2px
+  style H fill:#ffc,stroke:#333,stroke-width:2px
+  style I fill:#bbf,stroke:#333,stroke-width:2px
+```
 
 ## ✅ Phase 0: Planning
 
@@ -93,30 +94,6 @@ Supports both real-time (WebSocket) and static (API-based) notifications for hos
 - Enable email fallback for offline hosts
 - Let hosts customize notification preferences
 - Notification categories/types (e.g., bookings, reviews, messages)
-
-```mermaid
-graph TD
-  A["User books P_room (physical room)"] --> B[BookingModule]
-  B --> C[NotificationService]
-  C -->|Store notification in DB| D[Database]
-  C -->|Emit to S_room| E["WebSocketGateway (Short-lived S_room ~2-3s)"]
-
-  E --> F["Host Client Devices (WebSocket Connected)"]
-  F -->|Receive real-time notification| G[Display notification]
-
-  H[Host Frontend UI] <-->|Poll/Fetch notification count & list| I["Static Notification API (REST)"]
-  I --> D
-
-  style A fill:#f9f,stroke:#333,stroke-width:2px
-  style B fill:#bbf,stroke:#333,stroke-width:2px
-  style C fill:#bbf,stroke:#333,stroke-width:2px
-  style D fill:#afa,stroke:#333,stroke-width:2px
-  style E fill:#bbf,stroke:#333,stroke-width:2px
-  style F fill:#fcc,stroke:#333,stroke-width:2px
-  style G fill:#cff,stroke:#333,stroke-width:2px
-  style H fill:#ffc,stroke:#333,stroke-width:2px
-  style I fill:#bbf,stroke:#333,stroke-width:2px
-```
 
 | Component                            | Dependencies                          | Can Be Built Independently? | Notes                                              |
 | ------------------------------------ | ------------------------------------- | --------------------------- | -------------------------------------------------- |

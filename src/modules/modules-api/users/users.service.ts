@@ -140,7 +140,7 @@ export class UsersService {
       },
     });
 
-    const [rooms, totalUsers] = await Promise.all([
+    const [users, totalUsers] = await Promise.all([
       userPromise,
       totalUsersPromise,
     ]);
@@ -152,7 +152,7 @@ export class UsersService {
       pageSize,
       totalItem: totalUsers,
       totalPage: totalPages,
-      items: rooms || [],
+      items: users || [],
     };
   }
 
