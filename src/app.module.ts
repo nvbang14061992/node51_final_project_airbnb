@@ -18,6 +18,8 @@ import { RoomImageModule } from './modules/modules-api/room-image/room-image.mod
 import { BookingModule } from './modules/modules-api/booking/booking.module';
 import { PermissionStrategy } from './common/guard/permission/permission.strategy';
 import { NotificationModule } from './modules/modules-api/notification/notification.module';
+import { RealtimeNotificationModule } from './modules/modules-system/realtime-notification/realtime-notification.module';
+import { ConfigService } from './modules/modules-system/config/config.service';
 
 @Module({
   imports: [
@@ -37,9 +39,10 @@ import { NotificationModule } from './modules/modules-api/notification/notificat
     RoomImageModule,
     BookingModule,
     NotificationModule,
+    RealtimeNotificationModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ProtectStrategy, PermissionStrategy],
+  providers: [AppService, ProtectStrategy, PermissionStrategy, ConfigService],
 })
 export class AppModule {
   constructor() {

@@ -13,4 +13,5 @@ export const envValidation = Joi.object({
   ACCESS_TOKEN_EXPIRES: Joi.string().optional(),
   REFRESH_TOKEN_SECRET: Joi.string().optional(),
   REFRESH_TOKEN_EXPIRES: Joi.string().optional(),
+  WEBSOCKET_SECRET: Joi.string().optional(),
 });

@@ -2,12 +2,17 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { PrismaService } from 'src/modules/modules-system/prisma/prisma.service';
-import { Users } from 'generated/prisma';
+import type { Phong, Users } from 'generated/prisma';
 import { use } from 'passport';
+import { RealtimeNotificationService } from 'src/modules/modules-system/realtime-notification/realtime-notification.service';
+import { number } from 'joi';
 
 @Injectable()
 export class BookingService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationService: RealtimeNotificationService,
+  ) {}
   async findBookingExisting(id: number) {
     const bookingExist = await this.prisma.datPhong.findUnique({
       where: {
@@ -48,10 +53,12 @@ export class BookingService {
     });
 
     if (!roomExist) throw new BadRequestException('Not found room!!!');
+    return roomExist;
   }
+
   async create(createBookingDto: CreateBookingDto, user: Users) {
     const { ma_phong, ngay_den, ngay_di, so_luong_khach } = createBookingDto;
-    await this.checkRoomExist(ma_phong);
+    const roomExist = await this.checkRoomExist(ma_phong);
 
     await this.checkBookingExist(ma_phong, ngay_den, ngay_di);
 
@@ -64,6 +71,25 @@ export class BookingService {
         ma_nguoi_dat: user.id,
       },
     });
+
+    // send notification
+    const hostId = Number(roomExist.chu_so_huu);
+    const message = `New booking confirmed for room ${newBooking.ma_phong}, hostId: ${hostId}`;
+    const newNotification = await this.notificationService.notifyBookingSuccess(
+      `${hostId}`,
+      message,
+    );
+    // store notification statically
+    if (newNotification) {
+      await this.prisma.notification.create({
+        data: {
+          bookingId: newBooking.id,
+          receiverId: hostId,
+          title: message,
+          type: 'booking',
+        },
+      });
+    }
 
     return newBooking;
   }

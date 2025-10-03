@@ -37,6 +37,10 @@ export class ConfigService {
     return this.mustGet('REFRESH_TOKEN_EXPIRES');
   }
 
+  get websocketSecret(): string {
+    return this.mustGet('WEBSOCKET_SECRET');
+  }
+
   private logConfig() {
     this.logger.log(`✅ PORT: ${this.port}`);
     this.logger.log(`✅ DATABASE_URL: ${this.databaseUrl.slice(0, 5)}...`);
@@ -50,6 +54,7 @@ export class ConfigService {
       `✅ REFRESH_TOKEN_SECRET: ${this.refreshTokenSecret.slice(0, this.refreshTokenSecret.length / 2)}...`,
     );
     this.logger.log(`✅ REFRESH_TOKEN_EXPIRES: ${this.refreshTokenExpires}`);
+    this.logger.log(`✅ WEBSOCKET_SECRET: ${this.websocketSecret}`);
   }
 
   /**

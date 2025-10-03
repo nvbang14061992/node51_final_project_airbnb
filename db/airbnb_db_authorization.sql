@@ -159,21 +159,21 @@ INSERT INTO Phong (
 )
 VALUES
 -- Vị trí 1 (TP.HCM): 2 phòng
-('Căn hộ HCM 1', 1, 2, 1, 1, 1, 'Căn hộ tiện nghi trung tâm HCM', 600000,
+('Căn hộ HCM 1', 3, 2, 1, 1, 1, 'Căn hộ tiện nghi trung tâm HCM', 600000,
  1, 1, 1, 1, 1, 1, 0, 0, 1),
 
-('Căn hộ HCM 2', 2, 4, 2, 2, 1, 'Căn hộ rộng rãi, gần chợ Bến Thành', 900000,
+('Căn hộ HCM 2', 3, 4, 2, 2, 1, 'Căn hộ rộng rãi, gần chợ Bến Thành', 900000,
  1, 1, 1, 1, 1, 1, 1, 0, 1),
 
 -- Vị trí 2 (Đà Lạt)
 ('Biệt thự Đà Lạt', 3, 6, 3, 3, 2, 'Biệt thự có vườn và view rừng thông', 1500000,
  1, 1, 1, 1, 1, 1, 1, 1, 2),
 
-('Nhà gỗ Đà Lạt', 1, 2, 1, 1, 1, 'Nhà gỗ nhỏ xinh, không gian ấm cúng', 700000,
+('Nhà gỗ Đà Lạt', 3, 2, 1, 1, 1, 'Nhà gỗ nhỏ xinh, không gian ấm cúng', 700000,
  1, 0, 1, 0, 1, 1, 0, 0, 2),
 
 -- Vị trí 3 (Phú Quốc)
-('Resort Phú Quốc', 2, 5, 2, 2, 2, 'Resort 5 sao sát biển', 2000000,
+('Resort Phú Quốc', 3, 5, 2, 2, 2, 'Resort 5 sao sát biển', 2000000,
  1, 1, 1, 1, 1, 1, 1, 1, 3),
 
 ('Bungalow Phú Quốc', 3, 3, 1, 2, 1, 'Bungalow riêng tư trong resort', 1200000,
