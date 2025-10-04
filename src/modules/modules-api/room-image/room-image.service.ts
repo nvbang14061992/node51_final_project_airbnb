@@ -35,7 +35,7 @@ export class RoomImageService {
     });
     if (!roomExist) throw new BadRequestException('Not found this room!!!');
 
-    const newRoom = await this.prisma.hinhAnh_Phong.create({
+    const newRoomImage = await this.prisma.hinhAnh_Phong.create({
       data: {
         ma_phong: roomExist.id,
         ma_nguoi_tao: user.id,
@@ -43,7 +43,7 @@ export class RoomImageService {
       },
     });
 
-    return newRoom;
+    return newRoomImage;
   }
 
   async findAll() {

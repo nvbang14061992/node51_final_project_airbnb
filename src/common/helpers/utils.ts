@@ -36,8 +36,8 @@ type FindManyAndCountModel = {
 export interface PaginationResult<T> {
   page: number;
   pageSize: number;
-  totalItems: number;
-  totalPages: number;
+  totalItem: number;
+  totalPage: number;
   items: T[];
 }
 
@@ -105,8 +105,8 @@ export async function getItemsPagination<T>(
   const results = {
     page: paginationParams.page,
     pageSize: paginationParams.pageSize,
-    totalItems: totalItems,
-    totalPages: totalPages,
+    totalItem: totalItems,
+    totalPage: totalPages,
     items: items || [],
   };
 
