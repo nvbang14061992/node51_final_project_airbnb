@@ -16,7 +16,7 @@ import { MarkReadDto } from './dto/mark-read.dto';
 import { MessageResponse } from 'src/common/decorators/message-response.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { SkipPermission } from 'src/common/decorators/skip-permission.decorator';
-import { Throttle } from '@nestjs/throttler';
+import { minutes, Throttle } from '@nestjs/throttler';
 
 @Controller('notification')
 @ApiBearerAuth()
@@ -32,7 +32,7 @@ export class NotificationController {
 
   @Get()
   @SkipPermission()
-  @Throttle({ default: { limit: 5, ttl: 10000 } })
+  @Throttle({ default: { limit: 100, ttl: minutes(60) } })
   @MessageResponse('Get notifications successfully!!!')
   findAll(@CurrentUser() user: Users, @Query() query: QueryPaginationDto) {
     return this.notificationService.findAll(user, query);
