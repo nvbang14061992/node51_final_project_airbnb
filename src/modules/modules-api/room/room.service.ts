@@ -4,6 +4,8 @@ import { UpdateRoomDto } from './dto/update-room.dto';
 import { PrismaService } from 'src/modules/modules-system/prisma/prisma.service';
 import { QueryRoomDto } from './dto/query-room.dto';
 import { QueryRoomLocationDto } from './dto/query-location.dto';
+import { Phong } from 'generated/prisma';
+import { getItemsPagination, PaginationResult } from 'src/common/helpers/utils';
 
 @Injectable()
 export class RoomService {
@@ -40,58 +42,18 @@ export class RoomService {
     return rooms;
   }
 
-  async findAllPagination(query: QueryRoomDto) {
-    let { page, pageSize, filtersStringJson } = query;
-    page = +page > 0 ? +page : 1; // avoid return error, for user experience
-    pageSize = +pageSize > 0 ? +pageSize : 10;
-    const filters = JSON.parse(filtersStringJson || '{}') || {};
+  async findAllPagination(
+    query: QueryRoomDto,
+  ): Promise<PaginationResult<Phong>> {
+    const softDeleteFilter = { isDeleted: false };
 
-    const index = (page - 1) * +pageSize; // default pageSize is 3
+    const data = await getItemsPagination<Phong>(
+      query,
+      this.prisma.phong,
+      softDeleteFilter,
+    );
 
-    // process filters
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value === null || value === undefined || value === '') {
-        delete filters[key];
-        return;
-      }
-
-      if (typeof value === 'string') {
-        filters[key] = {
-          contains: value,
-        };
-      }
-    });
-
-    const completeFilters = {
-      ...filters,
-      isDeleted: false,
-    };
-    const phongThuePromise = this.prisma.phong.findMany({
-      skip: index,
-      take: +pageSize,
-
-      where: {
-        ...completeFilters,
-      },
-    });
-
-    // counts total rows in table
-    const totalItemsPromise = this.prisma.phong.count();
-
-    const [rooms, totalItems] = await Promise.all([
-      phongThuePromise,
-      totalItemsPromise,
-    ]);
-
-    // calculate total pages
-    const totalPages = Math.ceil(totalItems / +pageSize);
-    return {
-      page,
-      pageSize,
-      totalItem: totalItems,
-      totalPage: totalPages,
-      items: rooms || [],
-    };
+    return data;
   }
 
   async findOne(id: number) {

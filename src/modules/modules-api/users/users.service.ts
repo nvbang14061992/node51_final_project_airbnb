@@ -7,7 +7,12 @@ import { SignupDto } from '../auth/dto/signup.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { QueryUserDto } from './dto/query-user.dto';
-import { deleteFile, fileExists } from 'src/common/helpers/utils';
+import {
+  deleteFile,
+  fileExists,
+  getItemsPagination,
+  PaginationResult,
+} from 'src/common/helpers/utils';
 import { use } from 'passport';
 
 @Injectable()
@@ -97,63 +102,18 @@ export class UsersService {
     return `This action removes a #${id} user`;
   }
 
-  async findAllUserPagination(query: QueryUserDto) {
-    let { page, pageSize, filtersStringJson } = query;
-    page = +page > 0 ? +page : 1; // avoid return error, for user experience
-    pageSize = +pageSize > 0 ? +pageSize : 10;
-    const filters = JSON.parse(filtersStringJson || '{}') || {};
+  async findAllUserPagination(
+    query: QueryUserDto,
+  ): Promise<PaginationResult<Users>> {
+    const softDeleteFilter = { isDeleted: false };
 
-    const index = (page - 1) * +pageSize; // default pageSize is 3
+    const data = await getItemsPagination<Users>(
+      query,
+      this.prisma.viTri,
+      softDeleteFilter,
+    );
 
-    // process filters
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value === null || value === undefined || value === '') {
-        delete filters[key];
-        return;
-      }
-
-      if (typeof value === 'string') {
-        filters[key] = {
-          contains: value,
-        };
-      }
-    });
-
-    const fullFilters = {
-      isDeleted: false,
-      ...filters,
-    };
-
-    const userPromise = this.prisma.users.findMany({
-      skip: index,
-      take: +pageSize,
-
-      where: {
-        ...fullFilters,
-      },
-    });
-
-    // counts total rows in table
-    const totalUsersPromise = this.prisma.users.count({
-      where: {
-        isDeleted: false,
-      },
-    });
-
-    const [users, totalUsers] = await Promise.all([
-      userPromise,
-      totalUsersPromise,
-    ]);
-
-    // calculate total pages
-    const totalPages = Math.ceil(totalUsers / +pageSize);
-    return {
-      page,
-      pageSize,
-      totalItem: totalUsers,
-      totalPage: totalPages,
-      items: users || [],
-    };
+    return data;
   }
 
   async findAllUserByName(teNguoiDung: string) {

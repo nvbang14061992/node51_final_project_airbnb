@@ -4,7 +4,13 @@ import { UpdateLocationDto } from './dto/update-location.dto';
 import { PrismaService } from 'src/modules/modules-system/prisma/prisma.service';
 import { QueryLocationDto } from './dto/query-location.dto';
 import { QueryIdDto } from 'src/common/dtos/query-id.dto';
-import { deleteFile, fileExists } from 'src/common/helpers/utils';
+import {
+  deleteFile,
+  fileExists,
+  getItemsPagination,
+  PaginationResult,
+} from 'src/common/helpers/utils';
+import { ViTri } from 'generated/prisma';
 
 @Injectable()
 export class LocationService {
@@ -42,58 +48,18 @@ export class LocationService {
     return locations;
   }
 
-  async findAllWithPagination(query: QueryLocationDto) {
-    let { page, pageSize, filtersStringJson } = query;
-    page = +page > 0 ? +page : 1; // avoid return error, for user experience
-    pageSize = +pageSize > 0 ? +pageSize : 10;
-    const filters = JSON.parse(filtersStringJson || '{}') || {};
+  async findAllWithPagination(
+    query: QueryLocationDto,
+  ): Promise<PaginationResult<ViTri>> {
+    const softDeleteFilter = { isDeleted: false };
 
-    const index = (page - 1) * +pageSize; // default pageSize is 3
+    const data = await getItemsPagination<ViTri>(
+      query,
+      this.prisma.viTri,
+      softDeleteFilter,
+    );
 
-    // process filters
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value === null || value === undefined || value === '') {
-        delete filters[key];
-        return;
-      }
-
-      if (typeof value === 'string') {
-        filters[key] = {
-          contains: value,
-        };
-      }
-    });
-
-    const completeFilters = {
-      ...filters,
-      isDeleted: false,
-    };
-    const viTriPromise = this.prisma.viTri.findMany({
-      skip: index,
-      take: +pageSize,
-
-      where: {
-        ...completeFilters,
-      },
-    });
-
-    // counts total rows in table
-    const totalItemsPromise = this.prisma.viTri.count();
-
-    const [viTri, totalItems] = await Promise.all([
-      viTriPromise,
-      totalItemsPromise,
-    ]);
-
-    // calculate total pages
-    const totalPages = Math.ceil(totalItems / +pageSize);
-    return {
-      page,
-      pageSize,
-      totalItem: totalItems,
-      totalPage: totalPages,
-      items: viTri || [],
-    };
+    return data;
   }
 
   async findOne(id: number) {
