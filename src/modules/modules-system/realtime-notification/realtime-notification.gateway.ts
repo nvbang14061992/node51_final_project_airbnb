@@ -59,7 +59,7 @@ export class RealtimeNotificationGateway
           client.disconnect(true);
           this.logger.log(`Client ${client.id} TTL disconnect`);
         }
-      }, 3000);
+      }, 30000);
     } catch (err) {
       this.logger.error(`JWT validation failed: ${err.message}`);
       client.disconnect();

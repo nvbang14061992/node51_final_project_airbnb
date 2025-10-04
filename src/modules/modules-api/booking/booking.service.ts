@@ -9,10 +9,7 @@ import { number } from 'joi';
 
 @Injectable()
 export class BookingService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly notificationService: RealtimeNotificationService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
   async findBookingExisting(id: number) {
     const bookingExist = await this.prisma.datPhong.findUnique({
       where: {
@@ -72,26 +69,10 @@ export class BookingService {
       },
     });
 
-    // send notification
-    const hostId = Number(roomExist.chu_so_huu);
-    const message = `New booking confirmed for room ${newBooking.ma_phong}, hostId: ${hostId}`;
-    const newNotification = await this.notificationService.notifyBookingSuccess(
-      `${hostId}`,
-      message,
-    );
-    // store notification statically
-    if (newNotification) {
-      await this.prisma.notification.create({
-        data: {
-          bookingId: newBooking.id,
-          receiverId: hostId,
-          title: message,
-          type: 'booking',
-        },
-      });
-    }
-
-    return newBooking;
+    return {
+      hostId: roomExist.chu_so_huu,
+      newBooking: newBooking,
+    };
   }
 
   async findAll() {

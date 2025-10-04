@@ -1,12 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import type { Users } from 'generated/prisma';
+import { Notification_type, type Users } from 'generated/prisma';
 import { PrismaService } from 'src/modules/modules-system/prisma/prisma.service';
 import { QueryPaginationDto } from 'src/common/dtos/query-pagination.dto';
-import { MarkReadDto } from './dto/mark-read.dto';
 
+type CreateNotificationInput = {
+  bookingId: number;
+  receiverId: number;
+  title: string;
+  type?: Notification_type;
+};
+
+Notification_type;
 @Injectable()
 export class NotificationService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async create(data: CreateNotificationInput) {
+    Notification_type.booking;
+    await this.prisma.notification.create({
+      data: {
+        bookingId: data.bookingId,
+        receiverId: data.receiverId,
+        title: data.title,
+        type: data.type ?? Notification_type.booking,
+      },
+    });
+  }
 
   async markRead(user: Users, ids: number[]) {
     const result = await this.prisma.notification.updateMany({
